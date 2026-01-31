@@ -27,6 +27,13 @@ class Settings(BaseSettings):
     # App
     debug: bool = Field(default=False, description="Debug mode")
 
+    # Google Maps
+    google_maps_api_key: str = Field(..., description="Google Maps API key")
+
+    # Regrid API (for parcel ownership lookup)
+    regrid_api_key: str | None = Field(default=None, description="Regrid API key for parcel data")
+    regrid_use_sandbox: bool = Field(default=True, description="Use Regrid sandbox environment")
+
     # Privy (required for server-side JWT verification)
     privy_app_id: str | None = Field(default=None, description="Privy app ID from dashboard")
     privy_app_secret: str | None = Field(default=None, description="Privy app secret from dashboard")
