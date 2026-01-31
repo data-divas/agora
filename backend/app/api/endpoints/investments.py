@@ -52,6 +52,7 @@ def create_investment(
     db: Session = Depends(get_db),
 ) -> Investment:
     """Create a new investment (or get existing one for user-project pair)."""
+    investment_create.user_id = current_user.id
     db_investment = InvestmentService.create_investment(db, investment_create)
     return _investment_to_response(db_investment)
 
@@ -69,6 +70,11 @@ def get_investment(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Investment not found",
+        )
+    if db_investment.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not allowed to view this investment",
         )
     return _investment_to_response(db_investment)
 
@@ -112,6 +118,17 @@ def update_investment(
     """Update an investment (Privy JWT required). You can only update your own."""
     uuid_id = parse_investment_id(investment_id)
     db_investment = InvestmentService.get_investment(db, uuid_id)
+    if not db_investment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Investment not found",
+        )
+    if db_investment.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not allowed to update this investment",
+        )
+    db_investment = InvestmentService.update_investment(db, uuid_id, investment_update)
     if not db_investment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

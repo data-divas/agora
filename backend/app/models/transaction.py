@@ -60,7 +60,12 @@ class Transaction(Base, TimestampMixin):
         unique=True,
         index=True,
     )
-    solana_wallet_address: Mapped[str | None] = mapped_column(
+    user_wallet: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+        index=True,
+    )
+    pda_address: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
         index=True,
@@ -84,11 +89,14 @@ class Transaction(Base, TimestampMixin):
     )
 
     # Relationships
-    investment: Mapped["Investment"] = relationship("Investment", back_populates="transactions")
+    investment: Mapped["Investment"] = relationship(
+        "Investment", back_populates="transactions"
+    )
 
     __table_args__ = (
         CheckConstraint("amount > 0", name="check_positive_amount"),
         CheckConstraint(
-            "solana_amount IS NULL OR solana_amount > 0", name="check_positive_solana_amount"
+            "solana_amount IS NULL OR solana_amount > 0",
+            name="check_positive_solana_amount",
         ),
     )

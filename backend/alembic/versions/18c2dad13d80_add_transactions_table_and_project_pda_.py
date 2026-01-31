@@ -1,8 +1,8 @@
 """add transactions table and project pda wallet
 
-Revision ID: 34ee27a1af79
+Revision ID: 18c2dad13d80
 Revises: 6a2f0e99f0f7
-Create Date: 2026-01-31 16:42:51.312999
+Create Date: 2026-01-31 17:06:53.997440
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "34ee27a1af79"
+revision: str = "18c2dad13d80"
 down_revision: Union[str, Sequence[str], None] = "6a2f0e99f0f7"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,22 +30,20 @@ def upgrade() -> None:
         sa.Column(
             "status",
             sa.Enum(
-                "pending",
-                "confirmed",
-                "failed",
+                "PENDING",
+                "CONFIRMED",
+                "FAILED",
                 name="transactionstatus",
                 native_enum=False,
             ),
             nullable=False,
-            server_default="pending",
         ),
         sa.Column("solana_transaction_signature", sa.String(length=255), nullable=True),
-        sa.Column("solana_wallet_address", sa.String(length=255), nullable=True),
+        sa.Column("user_wallet", sa.String(length=255), nullable=True),
+        sa.Column("pda_address", sa.String(length=255), nullable=True),
         sa.Column("solana_amount", sa.Numeric(precision=19, scale=9), nullable=True),
         sa.Column("transaction_verified_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column(
-            "verification_attempts", sa.Integer(), nullable=False, server_default="0"
-        ),
+        sa.Column("verification_attempts", sa.Integer(), nullable=False),
         sa.Column("failure_reason", sa.String(length=500), nullable=True),
         sa.Column(
             "created_at",
@@ -77,19 +75,25 @@ def upgrade() -> None:
         unique=False,
     )
     op.create_index(
+        op.f("ix_transactions_pda_address"),
+        "transactions",
+        ["pda_address"],
+        unique=False,
+    )
+    op.create_index(
         op.f("ix_transactions_solana_transaction_signature"),
         "transactions",
         ["solana_transaction_signature"],
         unique=True,
     )
     op.create_index(
-        op.f("ix_transactions_solana_wallet_address"),
-        "transactions",
-        ["solana_wallet_address"],
-        unique=False,
+        op.f("ix_transactions_status"), "transactions", ["status"], unique=False
     )
     op.create_index(
-        op.f("ix_transactions_status"), "transactions", ["status"], unique=False
+        op.f("ix_transactions_user_wallet"),
+        "transactions",
+        ["user_wallet"],
+        unique=False,
     )
     op.create_unique_constraint(
         "uq_user_project", "investments", ["user_id", "project_id"]
@@ -122,13 +126,12 @@ def downgrade() -> None:
         ),
     )
     op.drop_constraint("uq_user_project", "investments", type_="unique")
+    op.drop_index(op.f("ix_transactions_user_wallet"), table_name="transactions")
     op.drop_index(op.f("ix_transactions_status"), table_name="transactions")
-    op.drop_index(
-        op.f("ix_transactions_solana_wallet_address"), table_name="transactions"
-    )
     op.drop_index(
         op.f("ix_transactions_solana_transaction_signature"), table_name="transactions"
     )
+    op.drop_index(op.f("ix_transactions_pda_address"), table_name="transactions")
     op.drop_index(op.f("ix_transactions_investment_id"), table_name="transactions")
     op.drop_index(op.f("ix_transactions_id"), table_name="transactions")
     op.drop_table("transactions")

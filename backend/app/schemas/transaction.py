@@ -18,7 +18,9 @@ class TransactionBase(BaseModel):
     """Base transaction schema with shared properties."""
 
     investment_id: UUID
-    amount: Decimal = Field(..., gt=0, description="Transaction amount must be greater than 0")
+    amount: Decimal = Field(
+        ..., gt=0, description="Transaction amount must be greater than 0"
+    )
 
 
 class TransactionCreate(TransactionBase):
@@ -43,7 +45,8 @@ class TransactionInDB(TransactionBase):
     id: UUID
     status: TransactionStatus
     solana_transaction_signature: str | None
-    solana_wallet_address: str | None
+    user_wallet: str | None
+    pda_address: str | None
     solana_amount: Decimal | None
     transaction_verified_at: datetime | None
     verification_attempts: int
@@ -60,7 +63,8 @@ class Transaction(TransactionBase):
     id: str = Field(..., description="Transaction ID with prefix")
     status: TransactionStatus
     solana_transaction_signature: str | None
-    solana_wallet_address: str | None
+    user_wallet: str | None = Field(None, description="User's Solana wallet address")
+    pda_address: str | None = Field(None, description="Project's PDA wallet address")
     solana_amount: Decimal | None
     transaction_verified_at: datetime | None
     verification_attempts: int

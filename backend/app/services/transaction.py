@@ -135,7 +135,8 @@ class TransactionService:
         db_transaction.solana_transaction_signature = (
             transaction_confirm.transaction_signature
         )
-        db_transaction.solana_wallet_address = transaction_confirm.wallet_address
+        db_transaction.user_wallet = transaction_confirm.wallet_address
+        db_transaction.pda_address = project.solana_pda_wallet
         if transaction_confirm.solana_amount:
             db_transaction.solana_amount = transaction_confirm.solana_amount
 
