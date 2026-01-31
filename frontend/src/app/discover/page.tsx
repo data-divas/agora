@@ -64,7 +64,7 @@ export default function DiscoverPage() {
   return (
     <div className="flex h-screen bg-[#FAFAFA]">
       {/* Left sidebar nav */}
-      <aside className="flex w-16 flex-col items-center border-r border-black/5 bg-white py-6">
+      <aside className="flex w-16 flex-col items-center border-r border-white/10 bg-white/20 py-6 backdrop-blur-xl">
         <Link
           href="/"
           className="mb-8 text-2xl font-semibold text-agora-dark"
@@ -106,8 +106,8 @@ export default function DiscoverPage() {
       {/* Main content: list + map */}
       <div className="flex flex-1 min-w-0">
         {/* Left panel - parking lot list */}
-        <div className="flex w-full max-w-md flex-col border-r border-black/5 bg-white">
-          <div className="border-b border-black/5 p-4">
+        <div className="flex w-full max-w-md flex-col border-r border-white/10 bg-white/20 backdrop-blur-xl">
+          <div className="border-b border-white/10 p-4">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-semibold text-[#1a1a1a]">
                 Discover parking lots
@@ -187,8 +187,8 @@ export default function DiscoverPage() {
 
           {/* Selected lot detail card */}
           {selectedLot && (
-            <div className="border-t border-black/5 bg-white p-4">
-              <div className="rounded-xl border border-black/5 bg-[#FAFAFA] p-4">
+            <div className="border-t border-white/10 bg-white/20 p-4 backdrop-blur-xl">
+              <div className="rounded-xl border border-white/10 bg-white/20 p-4 backdrop-blur-xl">
                 <p className="font-medium text-[#1a1a1a]">{selectedLot.name}</p>
                 <p className="mt-1 text-sm text-[#6b7280] line-clamp-2">
                   {selectedLot.address}
@@ -246,7 +246,7 @@ export default function DiscoverPage() {
           />
           {/* Map overlay - selected lot summary */}
           {selectedLot && (
-            <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-black/5 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm md:left-auto md:right-4 md:w-80">
+            <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-white/20 px-4 py-3 shadow-lg backdrop-blur-xl md:left-auto md:right-4 md:w-80">
               <div className="flex items-center justify-between">
                 {selectedLot.is_available_for_rent && (
                   <span className="rounded-full bg-agora-light/80 px-2 py-0.5 text-xs font-medium text-agora-dark">
