@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DiscoverMap } from "./DiscoverMap";
-import { fetchParkingLots } from "./api";
+import { useParkingLotsQuery } from "./queries";
 import type { ParkingLot } from "./types";
 
 export type ParkingFilter = "all" | "available" | "underutilized";
@@ -14,19 +15,31 @@ const FILTER_LABELS: Record<ParkingFilter, string> = {
   underutilized: "Underutilized",
 };
 
-export default function DiscoverPage() {
-  const [parkingLots, setParkingLots] = useState<ParkingLot[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
-  const [activeFilter, setActiveFilter] = useState<ParkingFilter>("all");
+const FILTER_PARAM = "filter";
 
-  useEffect(() => {
-    fetchParkingLots()
-      .then(setParkingLots)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
-      .finally(() => setLoading(false));
-  }, []);
+function parseFilter(value: string | null): ParkingFilter {
+  if (value === "available" || value === "underutilized") return value;
+  return "all";
+}
+
+export default function DiscoverPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeFilter = parseFilter(searchParams.get(FILTER_PARAM));
+  const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
+
+  const { data: parkingLots = [], isLoading, error } = useParkingLotsQuery();
+
+  const setActiveFilter = (filter: ParkingFilter) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (filter === "all") {
+      params.delete(FILTER_PARAM);
+    } else {
+      params.set(FILTER_PARAM, filter);
+    }
+    const query = params.toString();
+    router.replace(query ? `/discover?${query}` : "/discover", { scroll: false });
+  };
 
   const filteredLots =
     activeFilter === "all"
@@ -120,12 +133,14 @@ export default function DiscoverPage() {
 
           {/* Scrollable list */}
           <div className="flex-1 overflow-y-auto">
-            {loading ? (
+            {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-agora-medium border-t-transparent" />
               </div>
             ) : error ? (
-              <div className="p-4 text-sm text-red-600">{error}</div>
+              <div className="p-4 text-sm text-red-600">
+                {error instanceof Error ? error.message : "Failed to load"}
+              </div>
             ) : filteredLots.length === 0 ? (
               <div className="p-4 text-sm text-[#6b7280]">
                 No parking lots found.
