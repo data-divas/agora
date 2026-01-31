@@ -11,8 +11,8 @@ export default function Home() {
             <a href="#how-it-works" className="text-sm text-[#6b7280] hover:text-[#1a1a1a] transition-colors">
               How it works
             </a>
-            <a href="#" className="text-sm text-[#6b7280] hover:text-[#1a1a1a] transition-colors">
-              Projects
+            <a href="/discover" className="text-sm text-[#6b7280] hover:text-[#1a1a1a] transition-colors">
+              Discover
             </a>
             <a
               href="#"
