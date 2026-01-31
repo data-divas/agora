@@ -1,22 +1,22 @@
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0f1419] text-[#e8e6e3]">
+    <div className="min-h-screen bg-[#FAFAFA] overflow-x-hidden">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0f1419]/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <a href="/" className="text-xl font-semibold tracking-tight">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-black/5 bg-[#FAFAFA]/95 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+          <a href="/" className="text-lg font-medium text-[#1a1a1a]">
             Agora
           </a>
-          <div className="flex items-center gap-8">
-            <a href="#how-it-works" className="text-sm text-[#9ca3af] hover:text-white transition-colors">
+          <div className="flex items-center gap-10">
+            <a href="#how-it-works" className="text-sm text-[#6b7280] hover:text-[#1a1a1a] transition-colors">
               How it works
             </a>
-            <a href="#invest" className="text-sm text-[#9ca3af] hover:text-white transition-colors">
-              Invest
+            <a href="#" className="text-sm text-[#6b7280] hover:text-[#1a1a1a] transition-colors">
+              Projects
             </a>
             <a
               href="#"
-              className="rounded-full bg-[#e8a838] px-4 py-2 text-sm font-medium text-[#0f1419] hover:bg-[#c4902a] transition-colors"
+              className="rounded-lg bg-agora-medium px-4 py-2 text-sm font-medium text-white hover:bg-agora-dark transition-colors"
             >
               Get started
             </a>
@@ -25,125 +25,130 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-20">
-        {/* Grid background */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, #e8e6e3 1px, transparent 1px),
-              linear-gradient(to bottom, #e8e6e3 1px, transparent 1px)
-            `,
-            backgroundSize: "64px 64px",
-          }}
-        />
-        <div className="relative mx-auto max-w-4xl text-center">
-          <p className="mb-4 text-sm font-medium uppercase tracking-widest text-[#e8a838]">
-            Crowdfunding for Urban Transformation
-          </p>
-          <h1 className="mb-6 text-5xl font-bold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-            Parking lots →
-            <br />
-            <span className="text-[#e8a838]">Third places</span>
-          </h1>
-          <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-[#9ca3af]">
-            Invest in the transformation of underutilized parking into parks, popups, and community spaces.
-            Retail investors. Real impact. Shared ownership.
-          </p>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <section className="relative px-6 pt-32 pb-24">
+        {/* Background orbs */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="absolute -right-40 -top-20 h-96 w-96 rounded-full bg-agora-light/40 blur-3xl animate-float"
+            aria-hidden
+          />
+          <div
+            className="absolute right-1/4 top-1/2 h-64 w-64 rounded-full bg-agora-medium/20 blur-3xl animate-float"
+            aria-hidden
+            style={{ animationDelay: "-4s" }}
+          />
+          <div
+            className="absolute -left-20 top-1/3 h-72 w-72 rounded-full bg-agora-light/30 blur-3xl animate-float"
+            aria-hidden
+            style={{ animationDelay: "-2s" }}
+          />
+        </div>
+
+        <div className="relative mx-auto max-w-5xl flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+          <div className="max-w-2xl animate-fade-up">
+            <p className="mb-3 text-sm italic text-[#6b7280]">
+              Crowdfunding for urban transformation
+            </p>
+            <h1 className="font-serif text-4xl font-semibold leading-tight text-[#1a1a1a] sm:text-5xl">
+              Parking lots become third places.
+            </h1>
+            <p className="mt-6 max-w-lg text-lg leading-relaxed text-[#6b7280]">
+              Invest in the transformation of underutilized parking into parks, plazas, and community spaces. Retail investors. Real impact. Shared ownership.
+            </p>
             <a
               href="#"
-              className="rounded-full bg-[#e8a838] px-8 py-4 text-base font-semibold text-[#0f1419] hover:bg-[#c4902a] transition-colors"
+              className="mt-10 inline-block rounded-lg bg-agora-medium px-6 py-3 text-base font-medium text-white hover:bg-agora-dark transition-colors"
             >
               Explore projects
             </a>
-            <a
-              href="#how-it-works"
-              className="rounded-full border border-white/20 px-8 py-4 text-base font-medium hover:border-white/40 hover:bg-white/5 transition-colors"
+          </div>
+
+          {/* Abstract geometric graphic */}
+          <div
+            className="relative mt-16 lg:mt-0 lg:min-w-[380px] lg:max-w-[420px] aspect-[4/3] animate-fade-up"
+            style={{ animationDelay: "0.15s" }}
+          >
+            <svg
+              viewBox="0 0 400 300"
+              fill="none"
+              className="w-full h-full"
+              aria-hidden
             >
-              Learn more
-            </a>
+              {/* Grid/urban base (parking lot feel) */}
+              <rect x="40" y="180" width="120" height="80" rx="4" fill="#13714C" fillOpacity="0.15" transform="rotate(-2 100 220)" />
+              <rect x="180" y="160" width="100" height="100" rx="4" fill="#13714C" fillOpacity="0.1" transform="rotate(3 230 210)" />
+              <rect x="260" y="140" width="80" height="120" rx="4" fill="#3AB67D" fillOpacity="0.2" transform="rotate(-4 300 200)" />
+              {/* Overlapping shapes - transformation */}
+              <rect x="80" y="60" width="140" height="100" rx="8" fill="#A2E494" fillOpacity="0.6" transform="rotate(-8 150 110)" />
+              <rect x="140" y="80" width="120" height="90" rx="8" fill="#3AB67D" fillOpacity="0.5" transform="rotate(6 200 125)" />
+              <rect x="200" y="50" width="100" height="110" rx="8" fill="#13714C" fillOpacity="0.35" transform="rotate(-3 250 105)" />
+              <rect x="250" y="90" width="90" height="80" rx="8" fill="#A2E494" fillOpacity="0.5" transform="rotate(5 295 130)" />
+            </svg>
           </div>
         </div>
       </section>
 
       {/* Value props */}
-      <section className="border-t border-white/5 py-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-12 md:grid-cols-3">
-            <div className="rounded-2xl border border-white/5 bg-[#1a1f26]/50 p-8">
-              <div className="mb-4 text-2xl">🏛️</div>
-              <h3 className="mb-2 text-lg font-semibold">Crowdfunding</h3>
-              <p className="text-[#9ca3af]">
-                Community-funded projects. Every dollar goes toward turning concrete into gathering spaces.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/5 bg-[#1a1f26]/50 p-8">
-              <div className="mb-4 text-2xl">👥</div>
-              <h3 className="mb-2 text-lg font-semibold">Retail investors</h3>
-              <p className="text-[#9ca3af]">
-                Anyone can invest. No accredited investor gatekeeping. Build the places you want to see.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/5 bg-[#1a1f26]/50 p-8">
-              <div className="mb-4 text-2xl">🌳</div>
-              <h3 className="mb-2 text-lg font-semibold">Third places</h3>
-              <p className="text-[#9ca3af]">
-                Cafés, plazas, parks. Not home, not work—spaces where community happens.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how-it-works" className="border-t border-white/5 py-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="mb-16 text-center text-3xl font-bold">How it works</h2>
-          <div className="grid gap-8 md:grid-cols-4">
+      <section className="relative border-t border-black/5 bg-white py-20">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="grid gap-16 md:grid-cols-3">
             {[
-              { step: "01", title: "Identify", desc: "We find underutilized parking lots ripe for transformation." },
-              { step: "02", title: "Design", desc: "Community input shapes each project—parks, plazas, markets." },
-              { step: "03", title: "Fund", desc: "Retail investors crowdfund the build. You own a piece." },
-              { step: "04", title: "Transform", desc: "Concrete becomes community. Revenue flows back to investors." },
-            ].map((item) => (
-              <div key={item.step}>
-                <span className="text-4xl font-bold text-[#e8a838]/30">{item.step}</span>
-                <h3 className="mt-2 text-lg font-semibold">{item.title}</h3>
-                <p className="mt-2 text-[#9ca3af]">{item.desc}</p>
+              { title: "Crowdfunding", desc: "Community-funded projects. Every dollar turns concrete into gathering spaces." },
+              { title: "Retail investors", desc: "Anyone can invest. No accredited investor gatekeeping." },
+              { title: "Third places", desc: "Cafés, plazas, parks. Not home, not work—spaces where community happens." },
+            ].map((item, i) => (
+              <div
+                key={item.title}
+                className="group rounded-2xl border border-black/5 bg-[#FAFAFA]/50 p-8 transition-all duration-300 hover:border-agora-medium/30 hover:shadow-lg hover:shadow-agora-light/20"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
+                <div className="mb-4 h-10 w-10 rounded-xl bg-gradient-to-br from-agora-light to-agora-medium opacity-80 group-hover:opacity-100 transition-opacity" />
+                <h3 className="text-base font-medium text-[#1a1a1a]">{item.title}</h3>
+                <p className="mt-2 text-[#6b7280] leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="border-t border-white/5 py-24">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <h2 className="mb-4 text-3xl font-bold">Ready to invest in your neighborhood?</h2>
-          <p className="mb-8 text-[#9ca3af]">
-            Join thousands of retail investors transforming parking lots into places people actually want to be.
-          </p>
-          <a
-            href="#"
-            className="inline-block rounded-full bg-[#e8a838] px-8 py-4 text-base font-semibold text-[#0f1419] hover:bg-[#c4902a] transition-colors"
-          >
-            Get started
-          </a>
+      {/* How it works */}
+      <section id="how-it-works" className="relative border-t border-black/5 py-20 overflow-hidden">
+        {/* Subtle gradient accent */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-agora-medium/30 to-transparent" />
+        <div className="mx-auto max-w-5xl px-6">
+          <h2 className="text-xl font-medium text-[#1a1a1a]">How it works</h2>
+          <div className="mt-10 grid gap-8 sm:grid-cols-4 sm:gap-4">
+            {[
+              { title: "Identify", desc: "Find underutilized parking lots." },
+              { title: "Design", desc: "Community shapes each project." },
+              { title: "Fund", desc: "Investors crowdfund. You own a piece." },
+              { title: "Transform", desc: "Concrete becomes community." },
+            ].map((item, i) => (
+              <div key={item.title} className="flex items-start gap-4">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-agora-light/60 text-sm font-medium text-agora-dark">
+                  {i + 1}
+                </span>
+                <div>
+                  <h3 className="text-base font-medium text-[#1a1a1a]">{item.title}</h3>
+                  <p className="mt-1 text-[#6b7280] text-sm">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-12">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 sm:flex-row">
-          <span className="font-semibold">Agora</span>
-          <div className="flex gap-8 text-sm text-[#9ca3af]">
-            <a href="#" className="hover:text-white transition-colors">About</a>
-            <a href="#" className="hover:text-white transition-colors">Projects</a>
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
+      <footer className="border-t border-black/5 py-8">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-6 sm:flex-row">
+          <span className="text-sm font-medium text-[#1a1a1a]">Agora</span>
+          <div className="flex gap-8 text-sm text-[#6b7280]">
+            <a href="#" className="hover:text-[#1a1a1a] transition-colors">About</a>
+            <a href="#" className="hover:text-[#1a1a1a] transition-colors">Projects</a>
+            <a href="#" className="hover:text-[#1a1a1a] transition-colors">Contact</a>
           </div>
         </div>
       </footer>
     </div>
-  );
+  )
 }
