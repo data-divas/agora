@@ -31,7 +31,6 @@ class UserService:
             email=user_create.email,
             first_name=user_create.first_name,
             last_name=user_create.last_name,
-            wallet_address=user_create.wallet_address,
         )
         db.add(db_user)
         db.commit()
