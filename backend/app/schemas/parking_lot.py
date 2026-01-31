@@ -54,6 +54,31 @@ class ParkingLotUpdate(BaseModel):
     estimated_capacity: Optional[int] = Field(None, description="Estimated parking capacity")
 
 
+class ParkingLotListResponse(ParkingLotBase):
+    """Schema for parking lot list (no parcel relationship to avoid N+1)."""
+
+    id: int
+    place_id: str
+    popular_times: Optional[dict] = None
+    avg_utilization: Optional[float] = Field(
+        None, description="Average utilization percentage (0-100)"
+    )
+    underutilized_hours: Optional[int] = Field(
+        None, description="Number of hours per week with < 30% utilization"
+    )
+    rating: Optional[float] = None
+    user_ratings_total: Optional[int] = None
+    business_status: Optional[str] = None
+    last_synced_at: Optional[datetime] = None
+    is_available_for_rent: Optional[bool] = None
+    contact_notes: Optional[str] = None
+    estimated_capacity: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
 class ParkingLotResponse(ParkingLotBase):
     """Schema for parking lot response."""
 

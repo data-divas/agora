@@ -1,11 +1,24 @@
 "use client";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
 import { createSolanaRpc, createSolanaRpcSubscriptions } from "@solana/kit";
 import type { ReactNode } from "react";
 
 export function Providers({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+          },
+        },
+      })
+  );
+
   const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
   const clientId = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID;
 
@@ -14,40 +27,42 @@ export function Providers({ children }: { children: ReactNode }) {
   }
 
   return (
-    <PrivyProvider
-      appId={appId}
-      clientId={clientId}
-      config={{
-        solana: {
-          rpcs: {
-            "solana:mainnet": {
-              rpc: createSolanaRpc("https://api.mainnet-beta.solana.com"),
-              rpcSubscriptions: createSolanaRpcSubscriptions("wss://api.mainnet-beta.solana.com"),
-            },
-            "solana:devnet": {
-              rpc: createSolanaRpc("https://api.devnet.solana.com"),
-              rpcSubscriptions: createSolanaRpcSubscriptions("wss://api.devnet.solana.com"),
-            },
-          },
-        },
-        embeddedWallets: {
+    <QueryClientProvider client={queryClient}>
+      <PrivyProvider
+        appId={appId}
+        clientId={clientId}
+        config={{
           solana: {
-            createOnLogin: "all-users",
+            rpcs: {
+              "solana:mainnet": {
+                rpc: createSolanaRpc("https://api.mainnet-beta.solana.com"),
+                rpcSubscriptions: createSolanaRpcSubscriptions("wss://api.mainnet-beta.solana.com"),
+              },
+              "solana:devnet": {
+                rpc: createSolanaRpc("https://api.devnet.solana.com"),
+                rpcSubscriptions: createSolanaRpcSubscriptions("wss://api.devnet.solana.com"),
+              },
+            },
           },
-        },
-        externalWallets: {
-          solana: {
-            connectors: toSolanaWalletConnectors(),
+          embeddedWallets: {
+            solana: {
+              createOnLogin: "all-users",
+            },
           },
-        },
-        loginMethods: ["wallet", "email"],
-        appearance: {
-          showWalletLoginFirst: true,
-          walletChainType: "solana-only",
-        },
-      }}
-    >
-      {children}
-    </PrivyProvider>
+          externalWallets: {
+            solana: {
+              connectors: toSolanaWalletConnectors(),
+            },
+          },
+          loginMethods: ["wallet", "email"],
+          appearance: {
+            showWalletLoginFirst: true,
+            walletChainType: "solana-only",
+          },
+        }}
+      >
+        {children}
+      </PrivyProvider>
+    </QueryClientProvider>
   );
 }
