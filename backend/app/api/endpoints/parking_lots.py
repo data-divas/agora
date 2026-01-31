@@ -1,11 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.parking_lot import ParkingLot
-from app.schemas.parking_lot import ParkingLotListResponse
+from app.schemas.parking_lot import ParkingLotListResponse, ParkingLotResponse
 
 router = APIRouter()
 
@@ -25,3 +25,18 @@ def list_parking_lots(
         .all()
     )
     return [ParkingLotListResponse.model_validate(pl) for pl in parking_lots]
+
+
+@router.get("/{parking_lot_id}", response_model=ParkingLotResponse)
+def get_parking_lot(
+    parking_lot_id: int,
+    db: Session = Depends(get_db),
+) -> ParkingLotResponse:
+    """Fetch a single parking lot by ID (for drill/detail page)."""
+    lot = db.query(ParkingLot).filter(ParkingLot.id == parking_lot_id).first()
+    if not lot:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Parking lot not found",
+        )
+    return ParkingLotResponse.model_validate(lot)

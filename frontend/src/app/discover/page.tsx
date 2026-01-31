@@ -146,38 +146,42 @@ export default function DiscoverPage() {
                 No parking lots found.
               </div>
             ) : (
-              filteredLots.map((lot) => (
-                <button
-                  key={lot.id}
-                  type="button"
-                  onClick={() => setSelectedLot(lot)}
-                  className={`w-full border-b border-black/5 px-4 py-4 text-left transition-colors hover:bg-agora-surface/30 ${
-                    selectedLot?.id === lot.id ? "bg-agora-surface/50" : ""
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-medium text-[#1a1a1a]">{lot.name}</p>
-                      <p className="mt-0.5 text-sm text-[#6b7280] line-clamp-1">
-                        {lot.address}
-                      </p>
-                      <div className="mt-1 flex gap-3 text-xs text-[#6b7280]">
-                        {lot.avg_utilization != null && (
-                          <span>{Math.round(lot.avg_utilization)}% avg use</span>
-                        )}
-                        {lot.estimated_capacity != null && (
-                          <span>{lot.estimated_capacity} spots</span>
-                        )}
+              filteredLots.map((lot) => {
+                const lotId = Number(lot.id);
+                const isSelected = selectedLot?.id === lot.id;
+                return (
+                  <Link
+                    key={lot.id}
+                    href={`/discover/${lotId}`}
+                    onClick={() => setSelectedLot(lot)}
+                    className={`block w-full border-b border-black/5 px-4 py-4 text-left transition-colors hover:bg-agora-surface/30 ${
+                      isSelected ? "bg-agora-surface/50" : ""
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="font-medium text-[#1a1a1a]">{lot.name}</p>
+                        <p className="mt-0.5 text-sm text-[#6b7280] line-clamp-1">
+                          {lot.address}
+                        </p>
+                        <div className="mt-1 flex gap-3 text-xs text-[#6b7280]">
+                          {lot.avg_utilization != null && (
+                            <span>{Math.round(lot.avg_utilization)}% avg use</span>
+                          )}
+                          {lot.estimated_capacity != null && (
+                            <span>{lot.estimated_capacity} spots</span>
+                          )}
+                        </div>
                       </div>
+                      {lot.is_available_for_rent && (
+                        <span className="shrink-0 rounded-full bg-agora-light/80 px-2 py-0.5 text-xs font-medium text-agora-dark">
+                          Available
+                        </span>
+                      )}
                     </div>
-                    {lot.is_available_for_rent && (
-                      <span className="shrink-0 rounded-full bg-agora-light/80 px-2 py-0.5 text-xs font-medium text-agora-dark">
-                        Available
-                      </span>
-                    )}
-                  </div>
-                </button>
-              ))
+                  </Link>
+                );
+              })
             )}
           </div>
 
@@ -222,12 +226,12 @@ export default function DiscoverPage() {
                     </span>
                   )}
                 </div>
-                <button
-                  type="button"
-                  className="mt-4 w-full rounded-lg bg-agora-medium py-2.5 text-sm font-medium text-white hover:bg-agora-dark transition-colors"
+                <Link
+                  href={`/discover/${Number(selectedLot.id)}`}
+                  className="mt-4 block w-full rounded-lg bg-agora-medium py-2.5 text-center text-sm font-medium text-white hover:bg-agora-dark transition-colors"
                 >
                   View details
-                </button>
+                </Link>
               </div>
             </div>
           )}

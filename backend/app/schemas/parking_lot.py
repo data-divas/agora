@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional, TYPE_CHECKING
 
 from pydantic import BaseModel, Field
+from app.schemas.parcel import ParcelResponse
 
 if TYPE_CHECKING:
     from app.schemas.parcel import ParcelResponse
@@ -107,6 +108,10 @@ class ParkingLotResponse(ParkingLotBase):
     )
 
     model_config = {"from_attributes": True}
+
+
+# Resolve forward reference to ParcelResponse so Pydantic can validate (e.g. in get_parking_lot)
+ParkingLotResponse.model_rebuild()
 
 
 class ParkingLotSearchRequest(BaseModel):
