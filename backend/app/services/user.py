@@ -2,7 +2,6 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from app.core.security import hash_password
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 
@@ -28,10 +27,8 @@ class UserService:
     @staticmethod
     def create_user(db: Session, user_create: UserCreate) -> User:
         """Create a new user."""
-        hashed_password = hash_password(user_create.password)
         db_user = User(
             email=user_create.email,
-            hashed_password=hashed_password,
             full_name=user_create.full_name,
             is_active=user_create.is_active,
         )
@@ -48,10 +45,6 @@ class UserService:
             return None
 
         update_data = user_update.model_dump(exclude_unset=True)
-
-        # Hash password if it's being updated
-        if "password" in update_data:
-            update_data["hashed_password"] = hash_password(update_data.pop("password"))
 
         for field, value in update_data.items():
             setattr(db_user, field, value)

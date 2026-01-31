@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
-from app.api.v1.router import api_router
+from app.api.router import api_router
 from app.config import get_settings
 
 settings = get_settings()
@@ -13,7 +13,7 @@ app = FastAPI(
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/api/v1/openapi.json",
+    openapi_url="/openapi.json",
 )
 
 # Configure CORS
@@ -26,7 +26,7 @@ app.add_middleware(
 )
 
 # Include API router
-app.include_router(api_router, prefix="/api/v1")
+app.include_router(api_router, prefix="/api")
 
 
 @app.get("/")
@@ -36,7 +36,7 @@ def root() -> dict[str, str]:
         "message": "Welcome to Agora API",
         "docs": "/docs",
         "redoc": "/redoc",
-        "openapi": "/api/v1/openapi.json",
+        "openapi": "/openapi.json",
     }
 
 

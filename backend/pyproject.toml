@@ -12,7 +12,6 @@ dependencies = [
     "pydantic-settings>=2.6.1",
     "python-dotenv>=1.0.1",
     "pydantic[email]>=2.10.3",
-    "passlib[bcrypt]>=1.7.4",
 ]
 
 [project.optional-dependencies]
