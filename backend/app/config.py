@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     # App
     debug: bool = Field(default=False, description="Debug mode")
 
+    # Privy (optional; required for server-side JWT verification)
+    privy_app_id: str | None = Field(default=None, description="Privy app ID from dashboard")
+    privy_app_secret: str | None = Field(default=None, description="Privy app secret from dashboard")
+
     @property
     def origins_list(self) -> List[str]:
         """Parse allowed origins into a list."""
