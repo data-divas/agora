@@ -9,6 +9,7 @@ class UserBase(BaseModel):
     email: EmailStr
     first_name: str | None = None
     last_name: str | None = None
+    privy_did: str | None = None
 
 
 class UserCreate(UserBase):
@@ -23,6 +24,7 @@ class UserUpdate(BaseModel):
     email: EmailStr | None = None
     first_name: str | None = None
     last_name: str | None = None
+    privy_did: str | None = None
 
 
 class UserInDB(UserBase):
@@ -31,6 +33,9 @@ class UserInDB(UserBase):
     id: int
     created_at: datetime
     updated_at: datetime
+
+    # Override: DB may contain placeholder emails (e.g. did.privy.xxx@privy.agora.local)
+    email: str
 
     model_config = {"from_attributes": True}
 
@@ -41,5 +46,8 @@ class User(UserBase):
     id: int
     created_at: datetime
     updated_at: datetime
+
+    # Override: allow placeholder emails in response (existing users may have did:privy:...@...)
+    email: str
 
     model_config = {"from_attributes": True}

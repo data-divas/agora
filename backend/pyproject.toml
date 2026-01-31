@@ -12,6 +12,7 @@ dependencies = [
     "pydantic-settings>=2.6.1",
     "python-dotenv>=1.0.1",
     "pydantic[email]>=2.10.3",
+    "privy-client>=0.1.0",
 ]
 
 [project.optional-dependencies]

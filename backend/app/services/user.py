@@ -20,6 +20,30 @@ class UserService:
         return db.query(User).filter(User.email == email).first()
 
     @staticmethod
+    def get_user_by_privy_did(db: Session, privy_did: str) -> User | None:
+        """Get a user by Privy DID."""
+        return db.query(User).filter(User.privy_did == privy_did).first()
+
+    @staticmethod
+    def get_or_create_user_by_privy(db: Session, privy_did: str) -> User:
+        """Get existing user by Privy DID or create one with a placeholder email."""
+        user = UserService.get_user_by_privy_did(db, privy_did)
+        if user:
+            return user
+        # Local part of email cannot contain colons; use dots so it passes EmailStr validation
+        placeholder_email = f"{privy_did.replace(':', '.')}@privy.agora.local"
+        db_user = User(
+            email=placeholder_email,
+            first_name=None,
+            last_name=None,
+            privy_did=privy_did,
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+
+    @staticmethod
     def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[User]:
         """Get a list of users with pagination."""
         return db.query(User).offset(skip).limit(limit).all()
@@ -31,6 +55,26 @@ class UserService:
             email=user_create.email,
             first_name=user_create.first_name,
             last_name=user_create.last_name,
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+
+    @staticmethod
+    def create_user_for_privy(
+        db: Session, user_create: UserCreate, privy_did: str
+    ) -> User:
+        """Create a user linked to a Privy DID (for POST /users with Privy auth)."""
+        if UserService.get_user_by_privy_did(db, privy_did):
+            return None  # caller should check and 400
+        if UserService.get_user_by_email(db, user_create.email):
+            return None  # email taken
+        db_user = User(
+            email=user_create.email,
+            first_name=user_create.first_name,
+            last_name=user_create.last_name,
+            privy_did=privy_did,
         )
         db.add(db_user)
         db.commit()
