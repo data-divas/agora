@@ -19,14 +19,10 @@ class Project(Base, TimestampMixin):
     status: Mapped[str | None] = mapped_column(String(255), nullable=True)
     investment_goal: Mapped[float | None] = mapped_column(Float, nullable=True)
 
-    # Foreign keys to link projects with parcels and parking lots
-    parcel_id: Mapped[Optional[int]] = mapped_column(
-        Integer, ForeignKey("parcels.id"), nullable=True, index=True
-    )
+    # Foreign key to link projects with parking lots
     parking_lot_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("parking_lots.id"), nullable=True, index=True
     )
 
-    # Relationships
-    parcel: Mapped[Optional["Parcel"]] = relationship("Parcel", lazy="joined")
+    # Relationship
     parking_lot: Mapped[Optional["ParkingLot"]] = relationship("ParkingLot", lazy="joined")
