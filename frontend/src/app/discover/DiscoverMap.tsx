@@ -50,7 +50,6 @@ export function DiscoverMap({
     selectedSite
   );
 
-  console.log(process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? "",
