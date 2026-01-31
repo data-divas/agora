@@ -18,9 +18,6 @@ class Settings(BaseSettings):
     # Database
     database_url: str = Field(..., description="PostgreSQL database URL")
 
-    # Security
-    secret_key: str = Field(..., description="Secret key for security operations")
-
     # CORS
     allowed_origins: str = Field(
         default="http://localhost:3000",

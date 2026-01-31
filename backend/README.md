@@ -18,7 +18,6 @@ FastAPI backend with SQLAlchemy, Pydantic, and Supabase integration.
 3. **Configure environment**:
    - Copy `.env.example` to `.env`
    - Update `DATABASE_URL` with your Supabase credentials
-   - The `SECRET_KEY` is already generated
 
 4. **Run database migrations**:
    ```bash
