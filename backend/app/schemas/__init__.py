@@ -30,7 +30,6 @@ __all__ = [
     "ProjectCreate",
     "ProjectUpdate",
     "ProjectInDB",
-,
     "ParkingLotCreate",
     "ParkingLotResponse",
     "ParkingLotUpdate",
