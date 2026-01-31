@@ -29,8 +29,9 @@ class UserService:
         """Create a new user."""
         db_user = User(
             email=user_create.email,
-            full_name=user_create.full_name,
-            is_active=user_create.is_active,
+            first_name=user_create.first_name,
+            last_name=user_create.last_name,
+            wallet_address=user_create.wallet_address,
         )
         db.add(db_user)
         db.commit()
