@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
+
+if TYPE_CHECKING:
+    from app.models.investment import Investment
 
 
 class User(Base, TimestampMixin):
@@ -15,3 +20,6 @@ class User(Base, TimestampMixin):
     wallet_address: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     privy_did: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+
+    # Relationships
+    investments: Mapped[list["Investment"]] = relationship("Investment", back_populates="user")
