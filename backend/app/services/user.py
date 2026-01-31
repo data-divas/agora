@@ -30,11 +30,12 @@ class UserService:
         user = UserService.get_user_by_privy_did(db, privy_did)
         if user:
             return user
-        placeholder_email = f"{privy_did}@privy.agora.local"
+        # Local part of email cannot contain colons; use dots so it passes EmailStr validation
+        placeholder_email = f"{privy_did.replace(':', '.')}@privy.agora.local"
         db_user = User(
             email=placeholder_email,
-            full_name=None,
-            is_active=True,
+            first_name=None,
+            last_name=None,
             privy_did=privy_did,
         )
         db.add(db_user)
@@ -54,6 +55,26 @@ class UserService:
             email=user_create.email,
             first_name=user_create.first_name,
             last_name=user_create.last_name,
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+
+    @staticmethod
+    def create_user_for_privy(
+        db: Session, user_create: UserCreate, privy_did: str
+    ) -> User:
+        """Create a user linked to a Privy DID (for POST /users with Privy auth)."""
+        if UserService.get_user_by_privy_did(db, privy_did):
+            return None  # caller should check and 400
+        if UserService.get_user_by_email(db, user_create.email):
+            return None  # email taken
+        db_user = User(
+            email=user_create.email,
+            first_name=user_create.first_name,
+            last_name=user_create.last_name,
+            privy_did=privy_did,
         )
         db.add(db_user)
         db.commit()
