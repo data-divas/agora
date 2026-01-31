@@ -7,7 +7,7 @@ import {
   Marker,
   useJsApiLoader,
 } from "@react-google-maps/api";
-import type { DiscoverSite } from "./sample-data";
+import type { ParkingLot } from "./types";
 
 const mapContainerStyle = {
   width: "100%",
@@ -15,8 +15,8 @@ const mapContainerStyle = {
 };
 
 const defaultCenter = {
-  lat: 39.8283,
-  lng: -98.5795,
+  lat: 37.7829,
+  lng: -122.4053,
 };
 
 const mapOptions = {
@@ -35,21 +35,20 @@ const mapOptions = {
 };
 
 interface DiscoverMapProps {
-  sites: DiscoverSite[];
-  selectedSite: DiscoverSite | null;
-  onSelectSite: (site: DiscoverSite) => void;
+  lots: ParkingLot[];
+  selectedLot: ParkingLot | null;
+  onSelectLot: (lot: ParkingLot) => void;
 }
 
 export function DiscoverMap({
-  sites,
-  selectedSite,
-  onSelectSite,
+  lots,
+  selectedLot,
+  onSelectLot,
 }: DiscoverMapProps) {
   const mapRef = useRef<google.maps.Map | null>(null);
-  const [infoWindowSite, setInfoWindowSite] = useState<DiscoverSite | null>(
-    selectedSite
+  const [infoWindowLot, setInfoWindowLot] = useState<ParkingLot | null>(
+    selectedLot
   );
-
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? "",
@@ -60,25 +59,28 @@ export function DiscoverMap({
   }, []);
 
   useEffect(() => {
-    if (selectedSite && mapRef.current) {
-      mapRef.current.panTo({ lat: selectedSite.lat, lng: selectedSite.lng });
+    if (selectedLot && mapRef.current) {
+      mapRef.current.panTo({
+        lat: selectedLot.latitude,
+        lng: selectedLot.longitude,
+      });
       mapRef.current.setZoom(14);
-      setInfoWindowSite(selectedSite);
+      setInfoWindowLot(selectedLot);
     }
-  }, [selectedSite?.id]);
+  }, [selectedLot?.id]);
 
   const onMarkerClick = useCallback(
-    (site: DiscoverSite) => {
-      onSelectSite(site);
-      setInfoWindowSite(site);
-      mapRef.current?.panTo({ lat: site.lat, lng: site.lng });
+    (lot: ParkingLot) => {
+      onSelectLot(lot);
+      setInfoWindowLot(lot);
+      mapRef.current?.panTo({ lat: lot.latitude, lng: lot.longitude });
       mapRef.current?.setZoom(14);
     },
-    [onSelectSite]
+    [onSelectLot]
   );
 
   const onInfoWindowClose = useCallback(() => {
-    setInfoWindowSite(null);
+    setInfoWindowLot(null);
   }, []);
 
   if (loadError) {
@@ -101,42 +103,54 @@ export function DiscoverMap({
     <GoogleMap
       mapContainerStyle={mapContainerStyle}
       center={
-        selectedSite
-          ? { lat: selectedSite.lat, lng: selectedSite.lng }
-          : defaultCenter
+        selectedLot
+          ? { lat: selectedLot.latitude, lng: selectedLot.longitude }
+          : lots.length > 0
+            ? { lat: lots[0].latitude, lng: lots[0].longitude }
+            : defaultCenter
       }
-      zoom={selectedSite ? 14 : 4}
+      zoom={selectedLot || lots.length > 0 ? 14 : 4}
       onLoad={onMapLoad}
       options={mapOptions}
     >
-      {sites.map((site) => (
+      {lots.map((lot) => (
         <Marker
-          key={site.id}
-          position={{ lat: site.lat, lng: site.lng }}
-          onClick={() => onMarkerClick(site)}
+          key={lot.id}
+          position={{ lat: lot.latitude, lng: lot.longitude }}
+          onClick={() => onMarkerClick(lot)}
           icon={{
             path: google.maps.SymbolPath.CIRCLE,
-            scale: selectedSite?.id === site.id ? 14 : 10,
-            fillColor: site.status === "funded" ? "#13714C" : "#3AB67D",
+            scale: selectedLot?.id === lot.id ? 14 : 10,
+            fillColor: lot.is_available_for_rent ? "#13714C" : "#3AB67D",
             fillOpacity: 1,
             strokeColor: "#fff",
             strokeWeight: 2,
           }}
         />
       ))}
-      {infoWindowSite && (
+      {infoWindowLot && (
         <InfoWindow
-          position={{ lat: infoWindowSite.lat, lng: infoWindowSite.lng }}
+          position={{
+            lat: infoWindowLot.latitude,
+            lng: infoWindowLot.longitude,
+          }}
           onCloseClick={onInfoWindowClose}
         >
           <div className="min-w-[200px] p-1">
-            <p className="font-medium text-[#1a1a1a]">{infoWindowSite.name}</p>
-            <p className="mt-1 text-sm text-[#6b7280]">
-              {infoWindowSite.address}
-            </p>
-            <p className="mt-2 text-sm text-agora-dark">
-              → {infoWindowSite.plannedUse}
-            </p>
+            <p className="font-medium text-[#1a1a1a]">{infoWindowLot.name}</p>
+            <p className="mt-1 text-sm text-[#6b7280]">{infoWindowLot.address}</p>
+            {(infoWindowLot.avg_utilization != null ||
+              infoWindowLot.estimated_capacity != null) && (
+              <p className="mt-2 text-sm text-agora-dark">
+                {infoWindowLot.avg_utilization != null &&
+                  `${Math.round(infoWindowLot.avg_utilization)}% avg use`}
+                {infoWindowLot.avg_utilization != null &&
+                  infoWindowLot.estimated_capacity != null &&
+                  " · "}
+                {infoWindowLot.estimated_capacity != null &&
+                  `${infoWindowLot.estimated_capacity} spots`}
+              </p>
+            )}
           </div>
         </InfoWindow>
       )}

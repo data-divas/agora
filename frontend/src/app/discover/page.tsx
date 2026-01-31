@@ -3,43 +3,50 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { DiscoverMap } from "./DiscoverMap";
-import {
-  DISCOVER_SITES,
-  type DiscoverSite,
-  type SiteStatus,
-} from "./sample-data";
+import { fetchParkingLots } from "./api";
+import type { ParkingLot } from "./types";
 
-const STATUS_LABELS: Record<SiteStatus, string> = {
-  seeking: "Seeking funding",
-  funded: "Funded",
-  "in-progress": "In development",
-};
+export type ParkingFilter = "all" | "available" | "underutilized";
 
-const STATUS_STYLES: Record<SiteStatus, string> = {
-  seeking: "bg-agora-light/80 text-agora-dark",
-  funded: "bg-agora-medium/80 text-white",
-  "in-progress": "bg-agora-dark/90 text-white",
+const FILTER_LABELS: Record<ParkingFilter, string> = {
+  all: "All",
+  available: "Available for rent",
+  underutilized: "Underutilized",
 };
 
 export default function DiscoverPage() {
-  const [selectedSite, setSelectedSite] = useState<DiscoverSite | null>(
-    DISCOVER_SITES[0]
-  );
-  const [activeTab, setActiveTab] = useState<SiteStatus | "all">("all");
-
-  const filteredSites =
-    activeTab === "all"
-      ? DISCOVER_SITES
-      : DISCOVER_SITES.filter((s) => s.status === activeTab);
+  const [parkingLots, setParkingLots] = useState<ParkingLot[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
+  const [activeFilter, setActiveFilter] = useState<ParkingFilter>("all");
 
   useEffect(() => {
-    setSelectedSite((prev) => {
-      if (!prev || !filteredSites.some((s) => s.id === prev.id)) {
-        return filteredSites[0] ?? null;
+    fetchParkingLots()
+      .then(setParkingLots)
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filteredLots =
+    activeFilter === "all"
+      ? parkingLots
+      : activeFilter === "available"
+        ? parkingLots.filter((p) => p.is_available_for_rent === true)
+        : parkingLots.filter(
+            (p) =>
+              (p.avg_utilization != null && p.avg_utilization < 40) ||
+              (p.underutilized_hours != null && p.underutilized_hours > 0)
+          );
+
+  useEffect(() => {
+    setSelectedLot((prev) => {
+      if (!prev || !filteredLots.some((p) => p.id === prev.id)) {
+        return filteredLots[0] ?? null;
       }
       return prev;
     });
-  }, [activeTab]);
+  }, [activeFilter, filteredLots]);
 
   return (
     <div className="flex h-screen bg-[#FAFAFA]">
@@ -85,100 +92,120 @@ export default function DiscoverPage() {
 
       {/* Main content: list + map */}
       <div className="flex flex-1 min-w-0">
-        {/* Left panel - site list */}
+        {/* Left panel - parking lot list */}
         <div className="flex w-full max-w-md flex-col border-r border-black/5 bg-white">
           <div className="border-b border-black/5 p-4">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-semibold text-[#1a1a1a]">
-                Discover projects
+                Discover parking lots
               </h1>
-              <button
-                type="button"
-                className="rounded-lg p-2 text-[#6b7280] hover:bg-agora-surface hover:text-agora-dark transition-colors"
-                aria-label="Search"
-              >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
             </div>
             <div className="mt-4 flex gap-2">
-              {(["all", "seeking", "funded", "in-progress"] as const).map(
-                (tab) => (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => setActiveTab(tab)}
-                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                      activeTab === tab
-                        ? "bg-agora-dark text-white"
-                        : "bg-agora-surface/50 text-[#6b7280] hover:bg-agora-surface hover:text-[#1a1a1a]"
-                    }`}
-                  >
-                    {tab === "all" ? "All" : STATUS_LABELS[tab]}
-                  </button>
-                )
-              )}
+              {(["all", "available", "underutilized"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveFilter(tab)}
+                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                    activeFilter === tab
+                      ? "bg-agora-dark text-white"
+                      : "bg-agora-surface/50 text-[#6b7280] hover:bg-agora-surface hover:text-[#1a1a1a]"
+                  }`}
+                >
+                  {FILTER_LABELS[tab]}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Scrollable list */}
           <div className="flex-1 overflow-y-auto">
-            {filteredSites.map((site) => (
-              <button
-                key={site.id}
-                type="button"
-                onClick={() => setSelectedSite(site)}
-                className={`w-full border-b border-black/5 px-4 py-4 text-left transition-colors hover:bg-agora-surface/30 ${
-                  selectedSite?.id === site.id ? "bg-agora-surface/50" : ""
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-medium text-[#1a1a1a]">
-                      {site.city} → {site.plannedUse}
-                    </p>
-                    <p className="mt-0.5 text-sm text-[#6b7280]">
-                      Project #{site.id}
-                    </p>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-agora-medium border-t-transparent" />
+              </div>
+            ) : error ? (
+              <div className="p-4 text-sm text-red-600">{error}</div>
+            ) : filteredLots.length === 0 ? (
+              <div className="p-4 text-sm text-[#6b7280]">
+                No parking lots found.
+              </div>
+            ) : (
+              filteredLots.map((lot) => (
+                <button
+                  key={lot.id}
+                  type="button"
+                  onClick={() => setSelectedLot(lot)}
+                  className={`w-full border-b border-black/5 px-4 py-4 text-left transition-colors hover:bg-agora-surface/30 ${
+                    selectedLot?.id === lot.id ? "bg-agora-surface/50" : ""
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-[#1a1a1a]">{lot.name}</p>
+                      <p className="mt-0.5 text-sm text-[#6b7280] line-clamp-1">
+                        {lot.address}
+                      </p>
+                      <div className="mt-1 flex gap-3 text-xs text-[#6b7280]">
+                        {lot.avg_utilization != null && (
+                          <span>{Math.round(lot.avg_utilization)}% avg use</span>
+                        )}
+                        {lot.estimated_capacity != null && (
+                          <span>{lot.estimated_capacity} spots</span>
+                        )}
+                      </div>
+                    </div>
+                    {lot.is_available_for_rent && (
+                      <span className="shrink-0 rounded-full bg-agora-light/80 px-2 py-0.5 text-xs font-medium text-agora-dark">
+                        Available
+                      </span>
+                    )}
                   </div>
-                  <span
-                    className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[site.status]}`}
-                  >
-                    {STATUS_LABELS[site.status]}
-                  </span>
-                </div>
-              </button>
-            ))}
+                </button>
+              ))
+            )}
           </div>
 
-          {/* Selected site detail card */}
-          {selectedSite && (
+          {/* Selected lot detail card */}
+          {selectedLot && (
             <div className="border-t border-black/5 bg-white p-4">
               <div className="rounded-xl border border-black/5 bg-[#FAFAFA] p-4">
-                <p className="font-medium text-[#1a1a1a]">
-                  {selectedSite.city} → {selectedSite.plannedUse}
-                </p>
-                <p className="mt-1 text-sm text-[#6b7280]">
-                  Project #{selectedSite.id}
+                <p className="font-medium text-[#1a1a1a]">{selectedLot.name}</p>
+                <p className="mt-1 text-sm text-[#6b7280] line-clamp-2">
+                  {selectedLot.address}
                 </p>
                 <div className="mt-4 space-y-2 text-sm">
-                  <p className="text-[#6b7280]">
-                    <span className="font-medium text-[#1a1a1a]">Address:</span>{" "}
-                    {selectedSite.address}
-                  </p>
-                  <p className="text-[#6b7280]">
-                    <span className="font-medium text-[#1a1a1a]">Planned:</span>{" "}
-                    {selectedSite.plannedUse}
-                  </p>
-                  <div className="flex gap-4 pt-2">
-                    <span className="text-agora-dark font-medium">
-                      {selectedSite.fundingPercent}% funded
+                  {selectedLot.avg_utilization != null && (
+                    <p className="text-[#6b7280]">
+                      <span className="font-medium text-[#1a1a1a]">Avg utilization:</span>{" "}
+                      {Math.round(selectedLot.avg_utilization)}%
+                    </p>
+                  )}
+                  {selectedLot.estimated_capacity != null && (
+                    <p className="text-[#6b7280]">
+                      <span className="font-medium text-[#1a1a1a]">Capacity:</span>{" "}
+                      {selectedLot.estimated_capacity} spots
+                    </p>
+                  )}
+                  {selectedLot.rating != null && (
+                    <p className="text-[#6b7280]">
+                      <span className="font-medium text-[#1a1a1a]">Rating:</span>{" "}
+                      {selectedLot.rating}
+                      {selectedLot.user_ratings_total != null &&
+                        ` (${selectedLot.user_ratings_total} reviews)`}
+                    </p>
+                  )}
+                  {selectedLot.contact_notes && (
+                    <p className="text-[#6b7280]">
+                      <span className="font-medium text-[#1a1a1a]">Notes:</span>{" "}
+                      {selectedLot.contact_notes}
+                    </p>
+                  )}
+                  {selectedLot.is_available_for_rent && (
+                    <span className="inline-block rounded-full bg-agora-medium/90 px-2 py-0.5 text-xs font-medium text-white">
+                      Available for rent
                     </span>
-                    <span className="text-[#6b7280]">
-                      {selectedSite.investors} investors
-                    </span>
-                  </div>
+                  )}
                 </div>
                 <button
                   type="button"
@@ -194,29 +221,29 @@ export default function DiscoverPage() {
         {/* Right panel - map */}
         <div className="relative flex-1 min-h-[400px]">
           <DiscoverMap
-            sites={filteredSites}
-            selectedSite={selectedSite}
-            onSelectSite={setSelectedSite}
+            lots={filteredLots}
+            selectedLot={selectedLot}
+            onSelectLot={setSelectedLot}
           />
-          {/* Map overlay - selected site summary */}
-          {selectedSite && (
+          {/* Map overlay - selected lot summary */}
+          {selectedLot && (
             <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-black/5 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm md:left-auto md:right-4 md:w-80">
               <div className="flex items-center justify-between">
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[selectedSite.status]}`}
-                >
-                  {STATUS_LABELS[selectedSite.status]}
-                </span>
-                <span className="text-sm text-[#6b7280]">
-                  {selectedSite.fundingPercent}% · {selectedSite.investors} investors
-                </span>
+                {selectedLot.is_available_for_rent && (
+                  <span className="rounded-full bg-agora-light/80 px-2 py-0.5 text-xs font-medium text-agora-dark">
+                    Available for rent
+                  </span>
+                )}
+                {(selectedLot.avg_utilization != null || selectedLot.estimated_capacity != null) && (
+                  <span className="text-sm text-[#6b7280]">
+                    {selectedLot.avg_utilization != null && `${Math.round(selectedLot.avg_utilization)}% use`}
+                    {selectedLot.avg_utilization != null && selectedLot.estimated_capacity != null && " · "}
+                    {selectedLot.estimated_capacity != null && `${selectedLot.estimated_capacity} spots`}
+                  </span>
+                )}
               </div>
-              <p className="mt-2 font-medium text-[#1a1a1a]">
-                {selectedSite.name}
-              </p>
-              <p className="text-sm text-[#6b7280]">
-                {selectedSite.city} → {selectedSite.plannedUse}
-              </p>
+              <p className="mt-2 font-medium text-[#1a1a1a]">{selectedLot.name}</p>
+              <p className="text-sm text-[#6b7280] line-clamp-2">{selectedLot.address}</p>
             </div>
           )}
         </div>
