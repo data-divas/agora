@@ -73,7 +73,7 @@ export default function DiscoverPage() {
       </div>
 
       {/* Sidebar overlays map → backdrop-blur blurs the map */}
-      <aside className="fixed left-0 top-0 bottom-0 z-20 flex w-16 flex-col items-center border-r border-white/20 bg-white/10 py-6 backdrop-blur-xl backdrop-saturate-150">
+      <aside className="fixed left-0 top-0 bottom-0 z-20 flex w-16 flex-col items-center bg-white/10 py-6 backdrop-blur-xl backdrop-saturate-150">
         <Link
           href="/"
           className="mb-8 text-2xl font-semibold text-agora-dark"
@@ -115,8 +115,8 @@ export default function DiscoverPage() {
       {/* Main content: list panel + spacer (map shows through); pointer-events-none so map gets clicks, re-enabled on list and overlay */}
       <div className="relative z-10 flex h-full pl-16 pointer-events-none">
         {/* Left panel - parking lot list, glass over map */}
-        <div className="pointer-events-auto flex w-full max-w-md flex-col border-r border-white/10 bg-white/20 backdrop-blur-xl">
-          <div className="border-b border-white/10 p-4">
+        <div className="pointer-events-auto flex w-full max-w-md flex-col bg-white/20 backdrop-blur-xl">
+          <div className="p-4">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-semibold text-[#1a1a1a]">
                 Discover parking lots
@@ -163,8 +163,8 @@ export default function DiscoverPage() {
                     key={lot.id}
                     href={`/discover/${lotId}`}
                     onClick={() => setSelectedLot(lot)}
-                    className={`block w-full border-b border-black/5 px-4 py-4 text-left transition-colors hover:bg-agora-surface/30 ${
-                      isSelected ? "bg-agora-surface/50" : ""
+                    className={`block w-full px-4 py-4 text-left transition-colors ${
+                      isSelected ? "bg-white/10" : "hover:bg-white/5"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -194,11 +194,10 @@ export default function DiscoverPage() {
             )}
           </div>
 
-          {/* Selected lot detail card */}
+          {/* Selected lot detail - same panel, no extra wrapper */}
           {selectedLot && (
-            <div className="border-t border-white/10 bg-white/20 p-4 backdrop-blur-xl">
-              <div className="rounded-xl border border-white/10 bg-white/20 p-4 backdrop-blur-xl">
-                <p className="font-medium text-[#1a1a1a]">{selectedLot.name}</p>
+            <div className="p-4 pt-2">
+              <p className="font-medium text-[#1a1a1a]">{selectedLot.name}</p>
                 <p className="mt-1 text-sm text-[#6b7280] line-clamp-2">
                   {selectedLot.address}
                 </p>
@@ -241,7 +240,6 @@ export default function DiscoverPage() {
                 >
                   View details
                 </Link>
-              </div>
             </div>
           )}
         </div>
@@ -250,7 +248,7 @@ export default function DiscoverPage() {
         <div className="relative flex-1 min-h-[400px]">
           {/* Map overlay - selected lot summary */}
           {selectedLot && (
-            <div className="pointer-events-auto absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-white/20 px-4 py-3 shadow-lg backdrop-blur-xl md:left-auto md:right-4 md:w-80">
+            <div className="pointer-events-auto absolute bottom-4 left-4 right-4 rounded-xl bg-white/20 px-4 py-3 backdrop-blur-xl md:left-auto md:right-4 md:w-80">
               <div className="flex items-center justify-between">
                 {selectedLot.is_available_for_rent && (
                   <span className="rounded-full bg-agora-light/80 px-2 py-0.5 text-xs font-medium text-agora-dark">
