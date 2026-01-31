@@ -1,5 +1,6 @@
 """Privy JWT verification and FastAPI dependency."""
 
+import logging
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
@@ -10,6 +11,8 @@ from app.config import Settings, get_settings
 from app.database import get_db
 from app.models.user import User
 from app.services.user import UserService
+
+logger = logging.getLogger(__name__)
 
 
 class PrivyClaims:
@@ -39,16 +42,20 @@ async def get_privy_user(
     """
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
+        logger.warning("Missing or malformed Authorization header")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing or invalid Authorization header",
         )
     access_token = auth_header.removeprefix("Bearer ").strip()
     if not access_token:
+        logger.warning("Empty access token after parsing Authorization header")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing or invalid Authorization header",
         )
+
+    logger.info(f"Attempting to verify token for request to {request.url.path}")
 
     client = _get_privy_client(settings)
     if client is None:
@@ -58,22 +65,35 @@ async def get_privy_user(
         )
 
     try:
-        verified = client.users.verify_access_token(access_token)
+        verified = client.users.verify_access_token(auth_token=access_token)
     except Exception as e:
+        logger.error(f"Privy token verification failed: {type(e).__name__}: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
+            detail=f"Invalid or expired token: {e}",
         ) from e
 
-    # Map SDK response to our claims (attribute names may vary by SDK version)
-    user_id = getattr(verified, "user_id", None) or getattr(verified, "userId", None)
-    session_id = getattr(verified, "session_id", None) or getattr(verified, "sessionId", None)
-    app_id = getattr(verified, "app_id", None) or getattr(verified, "appId", None)
+    # Map SDK response to our claims (SDK may return dict or object)
+    def _claim(v, *keys: str):
+        for key in keys:
+            if isinstance(v, dict):
+                val = v.get(key)
+            else:
+                val = getattr(v, key, None)
+            if val is not None:
+                return val
+        return None
+
+    user_id = _claim(verified, "user_id", "userId")
+    session_id = _claim(verified, "session_id", "sessionId")
+    app_id = _claim(verified, "app_id", "appId")
     if not user_id:
+        logger.error(f"Token verified but missing user_id. Verified object: {verified}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token claims",
         )
+    logger.info(f"Successfully verified token for Privy user: {user_id}")
     return PrivyClaims(
         user_id=str(user_id),
         session_id=str(session_id) if session_id else "",

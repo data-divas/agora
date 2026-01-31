@@ -24,13 +24,21 @@ export function SyncUserToBackend() {
     const sync = async () => {
       try {
         const token = await getAccessToken();
+        console.log("Got Privy token:", token ? "present" : "missing");
         if (!token) return;
         const res = await fetch(`${API_URL}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.ok) syncedRef.current = true;
-      } catch {
-        // Retry on next mount or when effect re-runs
+        console.log("Backend /me response:", res.status, res.statusText);
+        if (!res.ok) {
+          const error = await res.text();
+          console.error("Backend /me error:", error);
+        } else {
+          syncedRef.current = true;
+          console.log("User synced to backend successfully");
+        }
+      } catch (error) {
+        console.error("Failed to sync user to backend:", error);
       }
     };
 
