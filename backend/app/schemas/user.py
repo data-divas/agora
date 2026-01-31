@@ -7,8 +7,9 @@ class UserBase(BaseModel):
     """Base user schema with shared properties."""
 
     email: EmailStr
-    full_name: str | None = None
-    is_active: bool = True
+    first_name: str | None = None
+    last_name: str | None = None
+    wallet_address: str | None = None
 
 
 class UserCreate(UserBase):
@@ -21,8 +22,9 @@ class UserUpdate(BaseModel):
     """Schema for updating a user. All fields are optional."""
 
     email: EmailStr | None = None
-    full_name: str | None = None
-    is_active: bool | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    wallet_address: str | None = None
 
 
 class UserInDB(UserBase):
