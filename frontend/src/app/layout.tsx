@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
+import { SyncUserToBackend } from "@/components/sync-user-to-backend";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -33,7 +34,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <SyncUserToBackend />
+          {children}
+        </Providers>
       </body>
     </html>
   );

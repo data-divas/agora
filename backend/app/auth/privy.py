@@ -3,12 +3,13 @@
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
+from privy import PrivyAPI
 from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
 from app.database import get_db
-from app.services.user import UserService
 from app.models.user import User
+from app.services.user import UserService
 
 
 class PrivyClaims:
@@ -20,24 +21,11 @@ class PrivyClaims:
         self.app_id = app_id
 
 
-def _get_privy_client(settings: Settings):
+def _get_privy_client(settings: Settings) -> PrivyAPI | None:
     """Return a PrivyAPI client if credentials are configured."""
     if not settings.privy_app_id or not settings.privy_app_secret:
         return None
-    try:
-        from privy import PrivyAPI
-    except ImportError:
-        try:
-            from privy_client import PrivyAPI
-        except ImportError:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Privy SDK not installed",
-            ) from None
-    return PrivyAPI(
-        app_id=settings.privy_app_id,
-        app_secret=settings.privy_app_secret,
-    )
+    return PrivyAPI(app_id=settings.privy_app_id, app_secret=settings.privy_app_secret)
 
 
 async def get_privy_user(
@@ -46,6 +34,7 @@ async def get_privy_user(
 ) -> PrivyClaims:
     """
     FastAPI dependency: verify Authorization Bearer token with Privy and return claims.
+    Uses PrivyAPI.users.verify_access_token(access_token).
     Raises 401 if missing/invalid token or Privy not configured.
     """
     auth_header = request.headers.get("Authorization")
@@ -65,7 +54,7 @@ async def get_privy_user(
     if client is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Privy server-side auth not configured (PRIVY_APP_ID / PRIVY_APP_SECRET)",
+            detail="Privy not configured (PRIVY_APP_ID / PRIVY_APP_SECRET)",
         )
 
     try:
