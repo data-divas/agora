@@ -2,7 +2,9 @@ from decimal import Decimal
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, computed_field, model_validator
+
+from app.schemas.transaction import TransactionStatus
 
 
 class InvestmentBase(BaseModel):
@@ -10,7 +12,6 @@ class InvestmentBase(BaseModel):
 
     user_id: int
     project_id: str
-    amount: Decimal = Field(..., gt=0, description="Investment amount must be greater than 0")
 
 
 class InvestmentCreate(InvestmentBase):
@@ -23,7 +24,6 @@ class InvestmentUpdate(BaseModel):
     """Schema for updating an investment. All fields are optional."""
 
     project_id: str | None = None
-    amount: Decimal | None = Field(None, gt=0, description="Investment amount must be greater than 0")
 
 
 class InvestmentInDB(InvestmentBase):
@@ -40,6 +40,10 @@ class Investment(InvestmentBase):
     """Schema for investment in API responses with prefixed UUID."""
 
     id: str = Field(..., description="Investment ID with prefix")
+    total_amount: Decimal = Field(
+        ...,
+        description="Total invested amount (sum of confirmed transactions)",
+    )
     created_at: datetime
     updated_at: datetime
 

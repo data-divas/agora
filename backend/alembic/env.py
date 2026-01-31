@@ -7,6 +7,7 @@ from alembic import context
 
 # Import settings to get database URL
 from app.config import get_settings
+
 # Import all models for autogenerate support
 from app.models.base import Base
 from app.models import Investment, Project, User, ParkingLot, Parcel  # noqa: F401

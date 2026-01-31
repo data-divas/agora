@@ -31,21 +31,29 @@ def parse_investment_id(investment_id: str) -> UUID:
         )
 
 
+def _investment_to_response(investment) -> Investment:
+    """Convert investment model to response schema with calculated total_amount."""
+    total_amount = InvestmentService.calculate_total_amount(investment)
+    investment_dict = {
+        "id": f"user_investment_{investment.id}",
+        "user_id": investment.user_id,
+        "project_id": investment.project_id,
+        "total_amount": total_amount,
+        "created_at": investment.created_at,
+        "updated_at": investment.updated_at,
+    }
+    return Investment.model_validate(investment_dict)
+
+
 @router.post("/", response_model=Investment, status_code=status.HTTP_201_CREATED)
 def create_investment(
     investment_create: InvestmentCreate,
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> Investment:
-    """Create a new investment for the authenticated user (Privy JWT required)."""
-    # Ignore user_id from body; always use current user
-    create_with_user = InvestmentCreate(
-        user_id=current_user.id,
-        project_id=investment_create.project_id,
-        amount=investment_create.amount,
-    )
-    db_investment = InvestmentService.create_investment(db, create_with_user)
-    return Investment.model_validate(db_investment)
+    """Create a new investment (or get existing one for user-project pair)."""
+    db_investment = InvestmentService.create_investment(db, investment_create)
+    return _investment_to_response(db_investment)
 
 
 @router.get("/{investment_id}", response_model=Investment)
@@ -62,12 +70,7 @@ def get_investment(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Investment not found",
         )
-    if db_investment.user_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not allowed to view this investment",
-        )
-    return Investment.model_validate(db_investment)
+    return _investment_to_response(db_investment)
 
 
 @router.get("/", response_model=List[Investment])
@@ -86,7 +89,7 @@ def list_investments(
         user_id=current_user.id,
         project_id=project_id,
     )
-    return [Investment.model_validate(inv) for inv in db_investments]
+    return [_investment_to_response(inv) for inv in db_investments]
 
 
 @router.get("/user/me", response_model=List[Investment])
@@ -94,9 +97,9 @@ def get_my_investments(
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> List[Investment]:
-    """Get all investments for the authenticated user (Privy JWT required)."""
-    db_investments = InvestmentService.get_investments_by_user_id(db, current_user.id)
-    return [Investment.model_validate(inv) for inv in db_investments]
+    """Get all investments for a specific user."""
+    db_investments = InvestmentService.get_investments_by_user_id(db, user_id)
+    return [_investment_to_response(inv) for inv in db_investments]
 
 
 @router.put("/{investment_id}", response_model=Investment)
@@ -114,13 +117,7 @@ def update_investment(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Investment not found",
         )
-    if db_investment.user_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not allowed to update this investment",
-        )
-    db_investment = InvestmentService.update_investment(db, uuid_id, investment_update)
-    return Investment.model_validate(db_investment)
+    return _investment_to_response(db_investment)
 
 
 @router.delete("/{investment_id}", status_code=status.HTTP_204_NO_CONTENT)
