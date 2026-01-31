@@ -3,11 +3,21 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.auth import get_current_user
 from app.database import get_db
+from app.models.user import User as UserModel
 from app.schemas.user import User, UserCreate, UserUpdate
 from app.services.user import UserService
 
 router = APIRouter()
+
+
+@router.get("/me", response_model=User)
+def get_current_user_profile(
+    current_user: UserModel = Depends(get_current_user),
+) -> UserModel:
+    """Get the authenticated user (Privy JWT required). Links Privy DID to DB user on first request."""
+    return current_user
 
 
 @router.post("/", response_model=User, status_code=status.HTTP_201_CREATED)

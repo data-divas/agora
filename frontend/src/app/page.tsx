@@ -1,12 +1,15 @@
+import { AuthNav } from "@/components/auth-nav";
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] overflow-x-hidden">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-black/5 bg-[#FAFAFA]/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <a href="/" className="text-lg font-medium text-[#1a1a1a]">
+          <Link href="/" className="text-lg font-medium text-[#1a1a1a]">
             Agora
-          </a>
+          </Link>
           <div className="flex items-center gap-10">
             <a href="#how-it-works" className="text-sm text-[#6b7280] hover:text-[#1a1a1a] transition-colors">
               How it works
@@ -14,12 +17,7 @@ export default function Home() {
             <a href="/discover" className="text-sm text-[#6b7280] hover:text-[#1a1a1a] transition-colors">
               Discover
             </a>
-            <a
-              href="#"
-              className="rounded-lg bg-agora-medium px-4 py-2 text-sm font-medium text-white hover:bg-agora-dark transition-colors"
-            >
-              Get started
-            </a>
+            <AuthNav />
           </div>
         </div>
       </nav>
@@ -135,6 +133,16 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+      {/* CTA */}
+      <section className="border-t border-white/5 py-24">
+        <div className="mx-auto max-w-3xl px-6 text-center">
+          <h2 className="mb-4 text-3xl font-bold">Ready to invest in your neighborhood?</h2>
+          <p className="mb-8 text-[#9ca3af]">
+            Join thousands of retail investors transforming parking lots into places people actually want to be.
+          </p>
+          <AuthNav />
         </div>
       </section>
 
