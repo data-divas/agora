@@ -12,6 +12,8 @@ class ProjectBase(BaseModel):
     project_description: str | None = None
     status: str | None = None
     investment_goal: float | None = None
+    parcel_id: int | None = None
+    parking_lot_id: int | None = None
 
 
 class ProjectCreate(ProjectBase):
@@ -29,6 +31,8 @@ class ProjectUpdate(BaseModel):
     project_description: str | None = None
     status: str | None = None
     investment_goal: float | None = None
+    parcel_id: int | None = None
+    parking_lot_id: int | None = None
 
 
 class ProjectInDB(ProjectBase):
@@ -37,7 +41,7 @@ class ProjectInDB(ProjectBase):
     id: int
     created_at: datetime
     updated_at: datetime
-
+    
     model_config = {"from_attributes": True}
 
 

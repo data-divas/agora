@@ -9,7 +9,7 @@ from alembic import context
 from app.config import get_settings
 # Import all models for autogenerate support
 from app.models.base import Base
-from app.models import Investment, Project, User  # noqa: F401
+from app.models import Investment, Project, User, ParkingLot, Parcel  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
