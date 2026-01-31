@@ -1,23 +1,52 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
 
 :root {
-  --background: #0f1419;
-  --foreground: #e8e6e3;
-  --accent: #e8a838;
-  --accent-muted: #c4902a;
+  --background: #FAFAFA;
+  --foreground: #1a1a1a;
+  --accent: #3AB67D;
+  --accent-light: #A2E494;
   --muted: #6b7280;
-  --surface: #1a1f26;
+  --surface: #ffffff;
 }
 
 @theme inline {
+  --color-agora-dark: #13714C;
+  --color-agora-medium: #3AB67D;
+  --color-agora-light: #A2E494;
+  --color-agora-surface: #E9EBED;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif), Georgia, serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -20px) scale(1.05); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.6; }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
 }
