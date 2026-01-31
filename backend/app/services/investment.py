@@ -1,9 +1,12 @@
+from decimal import Decimal
 from typing import List
 from uuid import UUID
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.investment import Investment
+from app.models.transaction import TransactionStatus
 from app.schemas.investment import InvestmentCreate, InvestmentUpdate
 
 
@@ -14,6 +17,34 @@ class InvestmentService:
     def get_investment(db: Session, investment_id: UUID) -> Investment | None:
         """Get an investment by ID."""
         return db.query(Investment).filter(Investment.id == investment_id).first()
+
+    @staticmethod
+    def get_or_create_investment(
+        db: Session, user_id: int, project_id: str
+    ) -> Investment:
+        """Get existing investment or create a new one for user-project pair."""
+        investment = (
+            db.query(Investment)
+            .filter(Investment.user_id == user_id, Investment.project_id == project_id)
+            .first()
+        )
+
+        if not investment:
+            investment = Investment(user_id=user_id, project_id=project_id)
+            db.add(investment)
+            db.commit()
+            db.refresh(investment)
+
+        return investment
+
+    @staticmethod
+    def calculate_total_amount(investment: Investment) -> Decimal:
+        """Calculate total amount from confirmed transactions."""
+        return sum(
+            transaction.amount
+            for transaction in investment.transactions
+            if transaction.status == TransactionStatus.CONFIRMED
+        )
 
     @staticmethod
     def get_investments_by_user_id(db: Session, user_id: int) -> List[Investment]:
@@ -48,15 +79,9 @@ class InvestmentService:
         db: Session, investment_create: InvestmentCreate
     ) -> Investment:
         """Create a new investment."""
-        db_investment = Investment(
-            user_id=investment_create.user_id,
-            project_id=investment_create.project_id,
-            amount=investment_create.amount,
+        return InvestmentService.get_or_create_investment(
+            db, investment_create.user_id, investment_create.project_id
         )
-        db.add(db_investment)
-        db.commit()
-        db.refresh(db_investment)
-        return db_investment
 
     @staticmethod
     def update_investment(
