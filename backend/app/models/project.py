@@ -23,7 +23,6 @@ class Project(Base, TimestampMixin):
         String(255),
         nullable=True,
         index=True,
-        description="Solana PDA wallet address for this project",
     )
 
     # Foreign key to link projects with parking lots

@@ -98,7 +98,7 @@ def get_my_investments(
     db: Session = Depends(get_db),
 ) -> List[Investment]:
     """Get all investments for a specific user."""
-    db_investments = InvestmentService.get_investments_by_user_id(db, user_id)
+    db_investments = InvestmentService.get_investments_by_user_id(db, current_user.id)
     return [_investment_to_response(inv) for inv in db_investments]
 
 
