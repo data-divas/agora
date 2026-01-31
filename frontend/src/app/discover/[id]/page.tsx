@@ -88,7 +88,7 @@ function RentabilityScore({ score }: { score: number }) {
 
 function SidebarLayout() {
   return (
-    <aside className="flex w-16 flex-col items-center border-r border-white/10 bg-white/20 py-6 backdrop-blur-xl">
+    <aside className="flex w-16 flex-col items-center border-r border-white/20 bg-white/15 py-6 backdrop-blur-xl backdrop-saturate-150">
       <Link
         href="/"
         className="mb-8 text-2xl font-semibold text-agora-dark"

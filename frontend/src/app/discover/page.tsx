@@ -62,9 +62,18 @@ export default function DiscoverPage() {
   }, [activeFilter, filteredLots]);
 
   return (
-    <div className="flex h-screen bg-[#FAFAFA]">
-      {/* Left sidebar nav */}
-      <aside className="flex w-16 flex-col items-center border-r border-white/10 bg-white/20 py-6 backdrop-blur-xl">
+    <div className="relative h-screen overflow-hidden">
+      {/* Full-bleed map so sidebar and list have something to blur */}
+      <div className="absolute inset-0 z-0 w-full h-full">
+        <DiscoverMap
+          lots={filteredLots}
+          selectedLot={selectedLot}
+          onSelectLot={setSelectedLot}
+        />
+      </div>
+
+      {/* Sidebar overlays map → backdrop-blur blurs the map */}
+      <aside className="fixed left-0 top-0 bottom-0 z-20 flex w-16 flex-col items-center border-r border-white/20 bg-white/10 py-6 backdrop-blur-xl backdrop-saturate-150">
         <Link
           href="/"
           className="mb-8 text-2xl font-semibold text-agora-dark"
@@ -103,10 +112,10 @@ export default function DiscoverPage() {
         </nav>
       </aside>
 
-      {/* Main content: list + map */}
-      <div className="flex flex-1 min-w-0">
-        {/* Left panel - parking lot list */}
-        <div className="flex w-full max-w-md flex-col border-r border-white/10 bg-white/20 backdrop-blur-xl">
+      {/* Main content: list panel + spacer (map shows through); pointer-events-none so map gets clicks, re-enabled on list and overlay */}
+      <div className="relative z-10 flex h-full pl-16 pointer-events-none">
+        {/* Left panel - parking lot list, glass over map */}
+        <div className="pointer-events-auto flex w-full max-w-md flex-col border-r border-white/10 bg-white/20 backdrop-blur-xl">
           <div className="border-b border-white/10 p-4">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-semibold text-[#1a1a1a]">
@@ -237,16 +246,11 @@ export default function DiscoverPage() {
           )}
         </div>
 
-        {/* Right panel - map */}
+        {/* Spacer so map shows on the right; events pass through to map */}
         <div className="relative flex-1 min-h-[400px]">
-          <DiscoverMap
-            lots={filteredLots}
-            selectedLot={selectedLot}
-            onSelectLot={setSelectedLot}
-          />
           {/* Map overlay - selected lot summary */}
           {selectedLot && (
-            <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-white/20 px-4 py-3 shadow-lg backdrop-blur-xl md:left-auto md:right-4 md:w-80">
+            <div className="pointer-events-auto absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-white/20 px-4 py-3 shadow-lg backdrop-blur-xl md:left-auto md:right-4 md:w-80">
               <div className="flex items-center justify-between">
                 {selectedLot.is_available_for_rent && (
                   <span className="rounded-full bg-agora-light/80 px-2 py-0.5 text-xs font-medium text-agora-dark">
