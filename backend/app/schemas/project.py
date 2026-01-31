@@ -7,11 +7,11 @@ class ProjectBase(BaseModel):
     """Base project schema with shared properties."""
 
     name: str
-    address: str | None = None
     required_fund: float | None = None
     project_type: str | None = None
     project_description: str | None = None
     status: str | None = None
+    investment_goal: float | None = None
 
 
 class ProjectCreate(ProjectBase):
@@ -24,11 +24,11 @@ class ProjectUpdate(BaseModel):
     """Schema for updating a project. All fields are optional."""
 
     name: str | None = None
-    address: str | None = None
     required_fund: float | None = None
     project_type: str | None = None
     project_description: str | None = None
     status: str | None = None
+    investment_goal: float | None = None
 
 
 class ProjectInDB(ProjectBase):
