@@ -102,11 +102,6 @@ class ParkingLotResponse(ParkingLotBase):
     created_at: datetime
     updated_at: datetime
 
-    # Parcel ownership data (if enriched)
-    parcel: Optional["ParcelResponse"] = Field(
-        None, description="Parcel ownership and rentability data (if available)"
-    )
-
     model_config = {"from_attributes": True}
 
 
