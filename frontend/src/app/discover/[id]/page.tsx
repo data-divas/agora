@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { DiscoverMap } from "../DiscoverMap";
-import { useParkingLotQuery } from "../queries";
+import { useParkingLotQuery, useProjectByParkingLotQuery, useRequestProjectMutation } from "../queries";
 import type { ParkingLotDetail } from "../types";
 
 function DetailSection({
@@ -146,6 +146,8 @@ export default function ParkingLotDrillPage() {
   const router = useRouter();
   const id = typeof params.id === "string" ? parseInt(params.id, 10) : null;
   const { data: lot, isLoading, error } = useParkingLotQuery(id ?? null);
+  const { data: project, isLoading: projectLoading } = useProjectByParkingLotQuery(id);
+  const requestProjectMutation = useRequestProjectMutation();
 
   if (id == null || Number.isNaN(id)) {
     return (
@@ -330,19 +332,49 @@ export default function ParkingLotDrillPage() {
                 </DetailSection>
               )}
 
-              <DetailSection title="Next steps">
-                <p className="text-sm text-[#6b7280] mb-4">
-                  Interested in this lot for a community project? Use the contact info above or
-                  return to discover more lots.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/discover"
-                    className="rounded-lg bg-white/20 px-4 py-2.5 text-sm font-medium text-[#1a1a1a] hover:bg-white/40 transition-colors backdrop-blur-xl"
-                  >
-                    Back to Discover
-                  </Link>
-                </div>
+              <DetailSection title="Project">
+                {projectLoading ? (
+                  <p className="text-sm text-[#6b7280]">Checking for existing project…</p>
+                ) : project == null ? (
+                  <>
+                    <p className="text-sm text-[#6b7280] mb-4">
+                      No project exists for this parking lot yet. Request one to start the approval process.
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        onClick={() => requestProjectMutation.mutate(detail.id)}
+                        disabled={requestProjectMutation.isPending}
+                        className="rounded-lg bg-agora-medium px-4 py-2.5 text-sm font-medium text-white hover:bg-agora-dark transition-colors disabled:opacity-60"
+                      >
+                        {requestProjectMutation.isPending ? "Requesting…" : "Request project"}
+                      </button>
+                      <Link
+                        href="/discover"
+                        className="rounded-lg bg-white/20 px-4 py-2.5 text-sm font-medium text-[#1a1a1a] hover:bg-white/40 transition-colors backdrop-blur-xl"
+                      >
+                        Back to Discover
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-[#6b7280] mb-2">
+                      Status: <span className="font-medium text-[#1a1a1a] capitalize">{project.status ?? "—"}</span>
+                    </p>
+                    {project.status === "pending" && (
+                      <p className="text-sm text-[#6b7280] mb-4">
+                        This project is awaiting approval.
+                      </p>
+                    )}
+                    <Link
+                      href="/discover"
+                      className="inline-block rounded-lg bg-white/20 px-4 py-2.5 text-sm font-medium text-[#1a1a1a] hover:bg-white/40 transition-colors backdrop-blur-xl"
+                    >
+                      Back to Discover
+                    </Link>
+                  </>
+                )}
               </DetailSection>
             </div>
 

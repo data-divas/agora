@@ -48,3 +48,18 @@ export interface Parcel {
 export interface ParkingLotDetail extends ParkingLot {
   parcel: Parcel | null;
 }
+
+/** Project from API - matches backend Project (e.g. for parking lot) */
+export interface Project {
+  id: number;
+  name: string;
+  required_fund: number | null;
+  project_type: string | null;
+  project_description: string | null;
+  status: string | null;
+  investment_goal: number | null;
+  solana_pda_wallet: string | null;
+  parking_lot_id: number | null;
+  created_at: string;
+  updated_at: string;
+}

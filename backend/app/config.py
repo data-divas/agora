@@ -27,8 +27,8 @@ class Settings(BaseSettings):
     # App
     debug: bool = Field(default=False, description="Debug mode")
 
-    # Google Maps
-    google_maps_api_key: str = Field(..., description="Google Maps API key")
+    # Google Maps (optional; required only for Maps/Places-dependent endpoints)
+    google_maps_api_key: str | None = Field(default=None, description="Google Maps API key")
 
     # Regrid API (for parcel ownership lookup)
     regrid_api_key: str | None = Field(default=None, description="Regrid API key for parcel data")
