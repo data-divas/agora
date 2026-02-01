@@ -112,10 +112,10 @@ export default function DiscoverPage() {
         </nav>
       </aside>
 
-      {/* Main content: list panel + spacer (map shows through); pointer-events-none so map gets clicks, re-enabled on list and overlay */}
-      <div className="relative z-10 flex h-full pl-16 pointer-events-none">
-        {/* Left panel - parking lot list, glass over map */}
-        <div className="pointer-events-auto flex w-full max-w-md flex-col bg-white/20 backdrop-blur-xl">
+      {/* Main content: floating list panel + spacer (map shows through) */}
+      <div className="relative z-10 flex h-full pl-16 pt-6 pb-6 pointer-events-none">
+        {/* Floating side menu - rounded, shadow, glass over map */}
+        <div className="pointer-events-auto ml-6 flex min-h-0 w-full max-w-md flex-1 flex-col overflow-hidden rounded-2xl bg-white/20 shadow-xl backdrop-blur-xl">
           <div className="p-4">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-semibold text-[#1a1a1a]">
