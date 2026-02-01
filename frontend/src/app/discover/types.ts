@@ -21,3 +21,30 @@ export interface ParkingLot {
   created_at: string;
   updated_at: string;
 }
+
+/** Parcel from API - matches backend ParcelResponse (optional on detail) */
+export interface Parcel {
+  id: number;
+  apn: string;
+  address: string;
+  county: string;
+  state: string;
+  parking_lot_id: number | null;
+  owner_name: string;
+  owner_mailing_address: string | null;
+  owner_type: string;
+  is_likely_commercial: boolean;
+  zoning: string | null;
+  land_use: string | null;
+  lot_size_sqft: number | null;
+  assessed_value: number | null;
+  year_built: number | null;
+  geometry: Record<string, unknown> | null;
+  rentability_score: number | null;
+  rentability_notes: string[] | null;
+}
+
+/** Single parking lot detail - matches backend ParkingLotResponse (includes optional parcel) */
+export interface ParkingLotDetail extends ParkingLot {
+  parcel: Parcel | null;
+}

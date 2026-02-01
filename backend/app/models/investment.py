@@ -1,14 +1,18 @@
-from decimal import Decimal
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import ForeignKey, Numeric, String
+from app.models.user import User
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
 
+if TYPE_CHECKING:
+    from app.models.transaction import Transaction
+
 
 class Investment(Base, TimestampMixin):
-    """Investment model linking users and projects."""
+    """Investment model representing a user's position in a project."""
 
     __tablename__ = "investments"
 
@@ -27,10 +31,14 @@ class Investment(Base, TimestampMixin):
         nullable=False,
         index=True,
     )
-    amount: Mapped[Decimal] = mapped_column(
-        Numeric(19, 2),
-        nullable=False,
-    )
 
     # Relationships
     user: Mapped["User"] = relationship("User", back_populates="investments")
+    transactions: Mapped[list["Transaction"]] = relationship(
+        "Transaction", back_populates="investment", cascade="all, delete-orphan"
+    )
+
+    # Unique constraint: one investment per user-project pair
+    __table_args__ = (
+        UniqueConstraint("user_id", "project_id", name="uq_user_project"),
+    )

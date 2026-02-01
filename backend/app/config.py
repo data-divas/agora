@@ -35,8 +35,26 @@ class Settings(BaseSettings):
     regrid_use_sandbox: bool = Field(default=True, description="Use Regrid sandbox environment")
 
     # Privy (required for server-side JWT verification)
-    privy_app_id: str | None = Field(default=None, description="Privy app ID from dashboard")
-    privy_app_secret: str | None = Field(default=None, description="Privy app secret from dashboard")
+    privy_app_id: str | None = Field(
+        default=None, description="Privy app ID from dashboard"
+    )
+    privy_app_secret: str | None = Field(
+        default=None, description="Privy app secret from dashboard"
+    )
+
+    # Solana
+    solana_rpc_url: str = Field(
+        default="https://api.mainnet-beta.solana.com",
+        description="Solana RPC endpoint URL",
+    )
+    solana_network: str = Field(
+        default="mainnet",
+        description="Solana network (mainnet or devnet)",
+    )
+    transaction_verification_timeout: int = Field(
+        default=300,
+        description="Transaction verification timeout in seconds",
+    )
 
     @property
     def origins_list(self) -> List[str]:

@@ -3,6 +3,7 @@ from typing import Optional
 from sqlalchemy import Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.models.parking_lot import ParkingLot
 from app.models.base import Base, TimestampMixin
 
 
@@ -18,6 +19,11 @@ class Project(Base, TimestampMixin):
     project_description: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str | None] = mapped_column(String(255), nullable=True)
     investment_goal: Mapped[float | None] = mapped_column(Float, nullable=True)
+    solana_pda_wallet: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+        index=True,
+    )
 
     # Foreign key to link projects with parking lots
     parking_lot_id: Mapped[Optional[int]] = mapped_column(
@@ -25,4 +31,6 @@ class Project(Base, TimestampMixin):
     )
 
     # Relationship
-    parking_lot: Mapped[Optional["ParkingLot"]] = relationship("ParkingLot", lazy="joined")
+    parking_lot: Mapped[Optional["ParkingLot"]] = relationship(
+        "ParkingLot", lazy="joined"
+    )

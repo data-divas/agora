@@ -12,6 +12,7 @@ class ProjectBase(BaseModel):
     project_description: str | None = None
     status: str | None = None
     investment_goal: float | None = None
+    solana_pda_wallet: str | None = None
     parking_lot_id: int | None = None
 
 
@@ -30,6 +31,7 @@ class ProjectUpdate(BaseModel):
     project_description: str | None = None
     status: str | None = None
     investment_goal: float | None = None
+    solana_pda_wallet: str | None = None
     parking_lot_id: int | None = None
 
 

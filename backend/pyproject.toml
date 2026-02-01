@@ -15,6 +15,7 @@ dependencies = [
     "privy-client>=0.1.0",
     "requests>=2.31.0",
     "populartimes @ git+https://github.com/m-wrzr/populartimes.git",
+    "httpx>=0.28.1",
 ]
 
 [project.optional-dependencies]
