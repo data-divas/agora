@@ -14,7 +14,7 @@ function DetailSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-xl border border-black/5 bg-white p-5 shadow-sm">
+    <section className="rounded-xl bg-white/20 p-5 shadow-sm backdrop-blur-xl">
       <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#6b7280]">
         {title}
       </h2>
@@ -88,7 +88,7 @@ function RentabilityScore({ score }: { score: number }) {
 
 function SidebarLayout() {
   return (
-    <aside className="flex w-16 flex-col items-center border-r border-black/5 bg-white py-6">
+    <aside className="flex w-16 flex-col items-center bg-white/15 py-6 backdrop-blur-xl backdrop-saturate-150">
       <Link
         href="/"
         className="mb-8 text-2xl font-semibold text-agora-dark"
@@ -183,7 +183,7 @@ export default function ParkingLotDrillPage() {
 
       <div className="flex flex-1 flex-col min-w-0">
         {/* Hero */}
-        <header className="border-b border-black/5 bg-white px-6 py-6">
+        <header className="bg-white/20 px-6 py-6 backdrop-blur-xl">
           <button
             type="button"
             onClick={() => router.back()}
@@ -338,7 +338,7 @@ export default function ParkingLotDrillPage() {
                 <div className="flex flex-wrap gap-3">
                   <Link
                     href="/discover"
-                    className="rounded-lg border border-black/10 bg-white px-4 py-2.5 text-sm font-medium text-[#1a1a1a] hover:bg-agora-surface transition-colors"
+                    className="rounded-lg bg-white/20 px-4 py-2.5 text-sm font-medium text-[#1a1a1a] hover:bg-white/40 transition-colors backdrop-blur-xl"
                   >
                     Back to Discover
                   </Link>
@@ -349,7 +349,7 @@ export default function ParkingLotDrillPage() {
             {/* Right column - map */}
             <div className="lg:col-span-2">
               <div className="sticky top-6 space-y-3">
-                <div className="h-[380px] overflow-hidden rounded-xl border border-black/5 bg-agora-surface/30 shadow-sm">
+                <div className="h-[380px] overflow-hidden rounded-xl bg-white/10 shadow-sm backdrop-blur-xl">
                   <DiscoverMap
                     lots={[detail]}
                     selectedLot={detail}
@@ -360,7 +360,7 @@ export default function ParkingLotDrillPage() {
                   href={googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-lg border border-black/10 bg-white px-4 py-2.5 text-center text-sm font-medium text-[#1a1a1a] hover:bg-agora-surface transition-colors"
+                  className="block rounded-lg bg-white/20 px-4 py-2.5 text-center text-sm font-medium text-[#1a1a1a] hover:bg-white/40 transition-colors backdrop-blur-xl"
                 >
                   Open in Google Maps
                 </a>

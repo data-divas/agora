@@ -62,9 +62,18 @@ export default function DiscoverPage() {
   }, [activeFilter, filteredLots]);
 
   return (
-    <div className="flex h-screen bg-[#FAFAFA]">
-      {/* Left sidebar nav */}
-      <aside className="flex w-16 flex-col items-center border-r border-black/5 bg-white py-6">
+    <div className="relative h-screen overflow-hidden">
+      {/* Full-bleed map so sidebar and list have something to blur */}
+      <div className="absolute inset-0 z-0 w-full h-full">
+        <DiscoverMap
+          lots={filteredLots}
+          selectedLot={selectedLot}
+          onSelectLot={setSelectedLot}
+        />
+      </div>
+
+      {/* Sidebar overlays map → backdrop-blur blurs the map */}
+      <aside className="fixed left-0 top-0 bottom-0 z-20 flex w-16 flex-col items-center bg-white/10 py-6 backdrop-blur-xl backdrop-saturate-150">
         <Link
           href="/"
           className="mb-8 text-2xl font-semibold text-agora-dark"
@@ -103,11 +112,11 @@ export default function DiscoverPage() {
         </nav>
       </aside>
 
-      {/* Main content: list + map */}
-      <div className="flex flex-1 min-w-0">
-        {/* Left panel - parking lot list */}
-        <div className="flex w-full max-w-md flex-col border-r border-black/5 bg-white">
-          <div className="border-b border-black/5 p-4">
+      {/* Main content: floating list panel + spacer (map shows through) */}
+      <div className="relative z-10 flex h-full pl-16 pt-6 pb-6 pointer-events-none">
+        {/* Floating side menu - rounded, shadow, glass over map */}
+        <div className="pointer-events-auto ml-6 flex min-h-0 w-full max-w-md flex-1 flex-col overflow-hidden rounded-2xl bg-white/20 shadow-xl backdrop-blur-xl">
+          <div className="p-4">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-semibold text-[#1a1a1a]">
                 Discover parking lots
@@ -154,8 +163,8 @@ export default function DiscoverPage() {
                     key={lot.id}
                     href={`/discover/${lotId}`}
                     onClick={() => setSelectedLot(lot)}
-                    className={`block w-full border-b border-black/5 px-4 py-4 text-left transition-colors hover:bg-agora-surface/30 ${
-                      isSelected ? "bg-agora-surface/50" : ""
+                    className={`block w-full px-4 py-4 text-left transition-colors ${
+                      isSelected ? "bg-white/10" : "hover:bg-white/5"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -185,11 +194,10 @@ export default function DiscoverPage() {
             )}
           </div>
 
-          {/* Selected lot detail card */}
+          {/* Selected lot detail - same panel, no extra wrapper */}
           {selectedLot && (
-            <div className="border-t border-black/5 bg-white p-4">
-              <div className="rounded-xl border border-black/5 bg-[#FAFAFA] p-4">
-                <p className="font-medium text-[#1a1a1a]">{selectedLot.name}</p>
+            <div className="p-4 pt-2">
+              <p className="font-medium text-[#1a1a1a]">{selectedLot.name}</p>
                 <p className="mt-1 text-sm text-[#6b7280] line-clamp-2">
                   {selectedLot.address}
                 </p>
@@ -232,21 +240,15 @@ export default function DiscoverPage() {
                 >
                   View details
                 </Link>
-              </div>
             </div>
           )}
         </div>
 
-        {/* Right panel - map */}
+        {/* Spacer so map shows on the right; events pass through to map */}
         <div className="relative flex-1 min-h-[400px]">
-          <DiscoverMap
-            lots={filteredLots}
-            selectedLot={selectedLot}
-            onSelectLot={setSelectedLot}
-          />
           {/* Map overlay - selected lot summary */}
           {selectedLot && (
-            <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-black/5 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm md:left-auto md:right-4 md:w-80">
+            <div className="pointer-events-auto absolute bottom-4 left-4 right-4 rounded-xl bg-white/20 px-4 py-3 backdrop-blur-xl md:left-auto md:right-4 md:w-80">
               <div className="flex items-center justify-between">
                 {selectedLot.is_available_for_rent && (
                   <span className="rounded-full bg-agora-light/80 px-2 py-0.5 text-xs font-medium text-agora-dark">
