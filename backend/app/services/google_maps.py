@@ -13,6 +13,14 @@ settings = get_settings()
 logger = logging.getLogger(__name__)
 
 
+def _require_api_key() -> None:
+    if not settings.google_maps_api_key:
+        raise HTTPException(
+            status_code=503,
+            detail="Google Maps API key not configured. Set GOOGLE_MAPS_API_KEY in .env",
+        )
+
+
 def fetch_places_nearby(lat: float, lng: float, radius: int) -> List[dict]:
     """
     Fetch parking lots from Google Places API using Nearby Search.
@@ -28,6 +36,7 @@ def fetch_places_nearby(lat: float, lng: float, radius: int) -> List[dict]:
     Raises:
         HTTPException: If the API request fails
     """
+    _require_api_key()
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 
     params = {
@@ -73,6 +82,7 @@ def fetch_popular_times(place_id: str) -> tuple[Optional[dict], Optional[float]]
     Note:
         Returns (None, None) if no data is available or if the request fails.
     """
+    _require_api_key()
     try:
         result = populartimes.get_id(settings.google_maps_api_key, place_id)
         popular_times_raw = result.get("populartimes", [])

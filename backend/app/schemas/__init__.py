@@ -1,4 +1,4 @@
-from app.schemas.project import Project, ProjectCreate, ProjectInDB, ProjectUpdate
+from app.schemas.project import Project, ProjectCreate, ProjectInDB, ProjectRequestCreate, ProjectUpdate
 from app.schemas.parcel import (
     EnrichedParkingLot,
     OwnerInfo,
@@ -28,6 +28,7 @@ __all__ = [
     "UserInDB",
     "Project",
     "ProjectCreate",
+    "ProjectRequestCreate",
     "ProjectUpdate",
     "ProjectInDB",
     "ParkingLotCreate",

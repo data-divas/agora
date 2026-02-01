@@ -22,6 +22,12 @@ class ProjectCreate(ProjectBase):
     pass
 
 
+class ProjectRequestCreate(BaseModel):
+    """Schema for requesting a project (creates with status=pending)."""
+
+    parking_lot_id: int
+
+
 class ProjectUpdate(BaseModel):
     """Schema for updating a project. All fields are optional."""
 
